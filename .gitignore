@@ -1,0 +1,17 @@
+# ignore all vim swap files
+*.swp
+
+# and gedit temporary files
+*~
+
+# ignore visual studio debug database
+*.pdb
+
+# ignore everything in obj directory and its subdirectories
+/obj/*
+
+# ignore everything in build/qt_creator directory
+/build/qt_creator/*
+
+# except the project file
+!/build/qt_creator/MUL.pro
