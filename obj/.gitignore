@@ -1,7 +1,0 @@
-# This directory is intended to contain temporary build files. The .gitignore
-# file must be present here for this directory to be tracked by git. 
-
-# Ignore everything in this directory
-*
-# Except this file
-!.gitignore
