@@ -34,13 +34,13 @@ private:
      \brief private copy constructor
     to make sure no one can create a copy of instance
     */
-    Controller(const Controller& other) {}
+    Controller(const Controller& other);
 
     /*!
      \brief private operator=
      to make sure no one can create a copy of instance
     */
-    Controller& operator= (const Controller& other) {}
+    Controller& operator= (const Controller& other);
 
 
     MainWindow *mainWin; //pointer to main window, to get access to ui
