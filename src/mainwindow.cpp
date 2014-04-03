@@ -41,12 +41,12 @@ void MainWindow::on_btnPause_clicked()
     Controller::ctrlInst()->pause();
 }
 
-void MainWindow::on_rbGrayFlt_toggled(bool /* checked */)
+void MainWindow::on_rbGrayFlt_toggled(bool /*checked*/)
 {
     Controller::ctrlInst()->selectFilter(Controller::GRAY_FLT);
 }
 
-void MainWindow::on_rbNoneFlt_toggled(bool /* checked */)
+void MainWindow::on_rbNoneFlt_toggled(bool /*checked*/)
 {
     Controller::ctrlInst()->selectFilter(Controller::NONE_FLT);
 }
@@ -58,4 +58,9 @@ void MainWindow::on_btnConvert_clicked()
                                 tr("Video Files (*.avi)"));
     if(fileName != NULL)
         Controller::ctrlInst()->convertToFile(fileName);
+}
+
+void MainWindow::on_btnStopConvert_clicked()
+{
+    Controller::ctrlInst()->stopConvertToFile();
 }

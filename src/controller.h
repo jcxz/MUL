@@ -2,17 +2,25 @@
 #define CONTROLLER_H
 
 #include <QDebug>
+#include <QMutex>
 
 #include <QObject>
 #include <opencv2/opencv.hpp>
 #include "player.h"
 #include "mattoqimage.h"
 #include "FilterGray.h"
+#include "converter.h"
 
 #include <QtConcurrent/QtConcurrent>
 
 class MainWindow;
 
+/*!
+ \brief Controller class
+
+ Bridges application logic with user interface as it is in Model-View-Controller
+ architecture pattern. Uses Singleton design pattern.
+*/
 class Controller : public QObject
 {
     Q_OBJECT
@@ -46,8 +54,9 @@ private:
     MainWindow *mainWin; //pointer to main window, to get access to ui
 
     //GLRenderer renderer;
-    MatToQimage converter;
+    MatToQimage matToQimg;
     Player player;
+    Converter converter;
 
 
 public:
@@ -82,14 +91,15 @@ public:
         }
     }
 
+    /*!
+      Filter types
+      */
     typedef enum{
         NONE_FLT = 0,
         GRAY_FLT
     }filterT;
 
-    void setMainWindow(MainWindow *ptr) {
-        mainWin = ptr;
-    }
+    void setMainWindow(MainWindow *ptr);
 
     void play();
     void stop();
@@ -103,8 +113,8 @@ public:
     void selectFilter(filterT flt);
     void convertToFile(QString &fileName);
     void controlsEnabled(bool value);
-    void setMaxProgress(uint maxVal);
-    void updateProgress(uint currVal);
+    void convertFinished(bool result);
+    void stopConvertToFile();
 signals:
 
 public slots:

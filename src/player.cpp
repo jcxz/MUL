@@ -3,7 +3,12 @@
 
 void Player::run()
 {
+    double duration; //for time measurment
+
     for(;;) {
+        //time measurment
+        duration = static_cast<double>(cv::getTickCount());
+
         input >> frame;
 
         if(end || frame.empty())
@@ -16,18 +21,22 @@ void Player::run()
         filterMutex.unlock();
 
         Controller::ctrlInst()->renderFrame(frame);
-        msleep(playSpeed);
+        //msleep(playSpeed);
+
+        //time measurment
+        duration = static_cast<double>(cv::getTickCount()) - duration;
+        duration /= cv::getTickFrequency(); // time elapsed in seconds
+        duration *= 1000; // time in ms
+
+        //if the time of execution is lower than targeted time,
+        //wait the rest of the time, else continue immediately
+        if(duration < playSpeed) {
+            msleep(playSpeed - duration);
+        } else {
+            //continue immediately
+        }
     }
 }
-
-/*bool Player::renderFrame()
-{
-    input >> frame;
-    if(frame.empty())
-        return false;
-
-    Controller::ctrlInst()->renderFrame(frame);
-}*/
 
 bool Player::setVideoFile(QString fPath) {
     if(!input.open(fPath.toStdString()))
@@ -60,71 +69,8 @@ void Player::stop() {
 
 void Player::pause() {
     end = true;
-    this->quit();//musi se nejdriv vyskocit z cyklu v run()
+    //this->quit();//musi se nejdriv vyskocit z cyklu v run()
     this->wait();
-}
-
-bool Player::convertToFile(QString &fileName)
-{
-    // query for the video properties
-    unsigned int frame_max = input.get(CV_CAP_PROP_FRAME_COUNT);
-    Controller::ctrlInst()->setMaxProgress(frame_max); //set max value of progress bar
-    int fourcc = input.get(CV_CAP_PROP_FOURCC);
-    double fps = input.get(CV_CAP_PROP_FPS);
-    cv::Size size(input.get(CV_CAP_PROP_FRAME_WIDTH), input.get(CV_CAP_PROP_FRAME_HEIGHT));
-
-    // rewind video
-    input.set(CV_CAP_PROP_POS_FRAMES, 0);
-
-    std::cout << "Input video properties:" << std::endl;
-    std::cout << "fourcc : " << fourcc << std::endl;
-    std::cout << "fps    : " << fps << std::endl;
-    std::cout << "size   : " << size << std::endl;
-
-    // open the output video file
-    cv::VideoWriter out(fileName.toStdString(), fourcc, fps, size);
-    if (!out.isOpened())
-    {
-      std::cerr << "Failed to open output video file: " << fileName.toStdString() << std::endl;
-      return false;
-    }
-
-    // process the individual video frames
-    cv::Mat frame;
-
-    //disable controls while converting
-    Controller::ctrlInst()->controlsEnabled(false);
-
-    for (unsigned int frame_i = 0; frame_i < frame_max; ++frame_i)
-    {
-      if (!input.read(frame))
-      {
-        std::cerr << "WARNING: An error occured while reading frame n. " << frame_i << std::endl;
-        continue;
-      }
-
-      if(filter)
-        filter->exec(frame);
-
-      out.write(frame);
-
-      if(frame_i % 100 == 0)
-        Controller::ctrlInst()->updateProgress(frame_i); //update progress bar
-    }
-
-    Controller::ctrlInst()->updateProgress(frame_max - 1); //update progress bar
-
-    //enable controls after converting
-    Controller::ctrlInst()->controlsEnabled(false);
-
-    // rewind video
-    input.set(CV_CAP_PROP_POS_MSEC, 0);
-    //display the first frame ov the video
-    input >> frame;
-    Controller::ctrlInst()->renderFrame(frame);
-    input.set(CV_CAP_PROP_POS_FRAMES, 0); // rewind video
-
-    return true;
 }
 
 Player::Player(QObject *parent) :

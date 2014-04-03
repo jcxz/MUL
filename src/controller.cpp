@@ -8,22 +8,38 @@ Controller::Controller()
 {
 }
 
+void Controller::setMainWindow(MainWindow *ptr) {
+    mainWin = ptr;
+
+    //connect signals from Converter to MainWindow
+    connect(&converter, SIGNAL(sendMaxProgress(int)),
+            mainWin->ui->pbConvert, SLOT(setMaximum(int)));
+    connect(&converter, SIGNAL(sendProgress(int)),
+            mainWin->ui->pbConvert, SLOT(setValue(int)));
+}
+
 Controller::~Controller()
 {
-    stop();
+    stop(); //stop video playing thread
+    //stop conversion thread
+    converter.stop();
 }
 
 void Controller::renderFrame(cv::Mat &frame)
 {
+    //resize video frame and display it in GUI
     mainWin->ui->label->setPixmap(
                 QPixmap::fromImage(
-                    converter.convert(frame)).scaled(mainWin->ui->label->width(),
+                    matToQimg.convert(frame)).scaled(mainWin->ui->label->width(),
                                                      mainWin->ui->label->height(),
                                                      Qt::KeepAspectRatio));
 }
 
 void Controller::play() {
-    player.play();
+    if(!player.isRunning())
+        player.play();
+    else
+        std::cerr << "Controller: Trying to start already running thread of class Player" << std::endl;
 }
 
 void Controller::stop() {
@@ -53,19 +69,12 @@ void Controller::writeMsg(std::string msg)
     qDebug() << msg.c_str();
 }
 
-void Controller::updateProgress(uint currVal)
-{
-    mainWin->ui->pbConvert->setValue(currVal);
-}
-
-void Controller::setMaxProgress(uint maxVal)
-{
-    mainWin->ui->pbConvert->setMaximum(maxVal);
-}
-
 void Controller::controlsEnabled(bool value)
 {
     mainWin->ui->btnConvert->setEnabled(value);
+    mainWin->ui->btnStopConvert->setEnabled(!value);
+    mainWin->ui->btnOpen->setEnabled(value);
+
     mainWin->ui->btnPause->setEnabled(value);
     mainWin->ui->btnPlay->setEnabled(value);
     mainWin->ui->btnStop->setEnabled(value);
@@ -87,6 +96,25 @@ void Controller::selectFilter(filterT flt)
 
 void Controller::convertToFile(QString &fileName)
 {
-    //run convertion in separate thread
-     QFuture<void> convertThread = QtConcurrent::run(&player, &Player::convertToFile, fileName);
+    controlsEnabled(false);
+    qDebug() << "CONVERT" << converter.isFinished();
+    if(!converter.isRunning())
+        converter.convert(player.getCurrInput(), player.getCurrFilter(), fileName);
+    else
+        std::cerr << "Controller: Trying to start already running thread of class Converter" << std::endl;
+    //mainWin->ui->btnConvert->setText("");
+}
+
+void Controller::stopConvertToFile()
+{
+    converter.stop();
+    converter.wait();
+    controlsEnabled(true);
+    qDebug() <<"STOP" << converter.isFinished();
+}
+
+void Controller::convertFinished(bool result)
+{
+    controlsEnabled(true);
+    writeMsg(result ? "Video successfully converted" : "Video conversion incomplete!");
 }

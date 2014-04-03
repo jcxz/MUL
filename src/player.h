@@ -10,6 +10,12 @@
 #include "mattoqimage.h"
 #include "Filter.h"
 
+/*!
+ \brief Player class
+
+ Processes video input, applies filters and sends frames to Controller to
+ display them. Runs in separate thread.
+*/
 class Player : public QThread
 {
     Q_OBJECT
@@ -51,7 +57,14 @@ public:
         filterMutex.unlock();
     }
 
-    bool convertToFile(QString &fileName);
+    cv::VideoCapture* getCurrInput() {
+        return &input;
+    }
+
+    Filter* getCurrFilter() {
+        return filter;
+    }
+
 signals:
 
 public slots:

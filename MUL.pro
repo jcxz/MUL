@@ -29,18 +29,29 @@ LIBS += -L"${MY_LIB_PATH}/opencv/build/x86/mingw47/lib" \
         -lopencv_imgproc248.dll
 }
 
+#Specify build folder
+release: DESTDIR = build/release
+debug:   DESTDIR = build/debug
+
+OBJECTS_DIR = $$DESTDIR/obj
+MOC_DIR = $$DESTDIR/moc
+RCC_DIR = $$DESTDIR/qrc
+UI_DIR = $$DESTDIR/ui
+
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mattoqimage.cpp \
     src/controller.cpp \
     src/player.cpp \
-    src/FilterGray.cpp
+    src/FilterGray.cpp \
+    src/converter.cpp
 
 HEADERS += src/mainwindow.h \
     src/mattoqimage.h \
     src/controller.h \
     src/player.h \
     src/Filter.h \
-    src/FilterGray.h
+    src/FilterGray.h \
+    src/converter.h
 
 FORMS += src/mainwindow.ui

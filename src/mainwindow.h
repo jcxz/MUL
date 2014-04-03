@@ -27,11 +27,13 @@ private slots:
 
     void on_btnPause_clicked();
 
-    void on_rbGrayFlt_toggled(bool checked);
+    void on_rbGrayFlt_toggled(bool);
 
-    void on_rbNoneFlt_toggled(bool checked);
+    void on_rbNoneFlt_toggled(bool);
 
     void on_btnConvert_clicked();
+
+    void on_btnStopConvert_clicked();
 
 private:
 
