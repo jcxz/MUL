@@ -9,6 +9,7 @@
 #include "player.h"
 #include "mattoqimage.h"
 #include "FilterGray.h"
+#include "filterhistogrameq.h"
 #include "converter.h"
 
 #include <QtConcurrent/QtConcurrent>
@@ -96,7 +97,8 @@ public:
       */
     typedef enum{
         NONE_FLT = 0,
-        GRAY_FLT
+        GRAY_FLT,
+        HIST_FLT
     }filterT;
 
     void setMainWindow(MainWindow *ptr);
@@ -105,7 +107,7 @@ public:
     void stop();
     void pause();
 
-    void renderFrame(cv::Mat &frame);
+    void renderFrame(const cv::Mat &frame);
 
     void writeMsg(std::string msg);
     void openVideoFile(QString &fileName);

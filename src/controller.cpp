@@ -25,7 +25,7 @@ Controller::~Controller()
     converter.stop();
 }
 
-void Controller::renderFrame(cv::Mat &frame)
+void Controller::renderFrame(const cv::Mat &frame)
 {
     //resize video frame and display it in GUI
     mainWin->ui->label->setPixmap(
@@ -33,6 +33,7 @@ void Controller::renderFrame(cv::Mat &frame)
                     matToQimg.convert(frame)).scaled(mainWin->ui->label->width(),
                                                      mainWin->ui->label->height(),
                                                      Qt::KeepAspectRatio));
+    //renderer.renderImage(matToQimg.convert(frame));
 }
 
 void Controller::play() {
@@ -65,7 +66,7 @@ void Controller::openVideoFile(QString &fileName)
 void Controller::writeMsg(std::string msg)
 {
     //write msg to status bar
-    mainWin->ui->statusBar->setToolTip(QString::fromStdString(msg));
+    mainWin->ui->lblStatusBar->setText(QString::fromStdString(msg));
     qDebug() << msg.c_str();
 }
 
@@ -89,6 +90,9 @@ void Controller::selectFilter(filterT flt)
     case GRAY_FLT:
         player.setFilter(new FilterGray());
         break;
+    case HIST_FLT:
+        player.setFilter(new FilterHistogramEq());
+        break;
     default:
         player.setFilter(NULL);
     }
@@ -98,8 +102,10 @@ void Controller::convertToFile(QString &fileName)
 {
     controlsEnabled(false);
     qDebug() << "CONVERT" << converter.isFinished();
-    if(!converter.isRunning())
+    if(!converter.isRunning()) {
+        pause(); //pause playing if it is running
         converter.convert(player.getCurrInput(), player.getCurrFilter(), fileName);
+    }
     else
         std::cerr << "Controller: Trying to start already running thread of class Converter" << std::endl;
     //mainWin->ui->btnConvert->setText("");

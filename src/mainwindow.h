@@ -35,6 +35,8 @@ private slots:
 
     void on_btnStopConvert_clicked();
 
+    void on_rbHistFlt_toggled(bool);
+
 private:
 
 };

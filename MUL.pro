@@ -44,7 +44,9 @@ SOURCES += src/main.cpp \
     src/controller.cpp \
     src/player.cpp \
     src/FilterGray.cpp \
-    src/converter.cpp
+    src/converter.cpp \
+    src/filterhistogrameq.cpp \
+    src/glrenderer.cpp
 
 HEADERS += src/mainwindow.h \
     src/mattoqimage.h \
@@ -52,6 +54,8 @@ HEADERS += src/mainwindow.h \
     src/player.h \
     src/Filter.h \
     src/FilterGray.h \
-    src/converter.h
+    src/converter.h \
+    src/filterhistogrameq.h \
+    src/glrenderer.h
 
 FORMS += src/mainwindow.ui

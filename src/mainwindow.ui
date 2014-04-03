@@ -39,6 +39,13 @@
        <string>Video</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="0">
+        <widget class="QLabel" name="lblStatusBar">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label">
          <property name="sizePolicy">
@@ -77,7 +84,7 @@
         <property name="maximumSize">
          <size>
           <width>169</width>
-          <height>82</height>
+          <height>100</height>
          </size>
         </property>
         <property name="title">
@@ -101,6 +108,13 @@
            </property>
            <property name="checked">
             <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="rbHistFlt">
+           <property name="text">
+            <string>Histogram Eq</string>
            </property>
           </widget>
          </item>
@@ -265,7 +279,7 @@
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="toolTip">
-    <string>ahoj</string>
+    <string/>
    </property>
   </widget>
  </widget>

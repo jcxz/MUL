@@ -6,6 +6,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->statusBar->addWidget(ui->lblStatusBar);
+
     //instantiate the controller
     Controller::instantiate();
     //set up displaying window
@@ -63,4 +66,9 @@ void MainWindow::on_btnConvert_clicked()
 void MainWindow::on_btnStopConvert_clicked()
 {
     Controller::ctrlInst()->stopConvertToFile();
+}
+
+void MainWindow::on_rbHistFlt_toggled(bool /*checked*/)
+{
+    Controller::ctrlInst()->selectFilter(Controller::HIST_FLT);
 }

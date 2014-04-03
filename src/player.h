@@ -9,6 +9,7 @@
 #include <opencv2/opencv.hpp>
 #include "mattoqimage.h"
 #include "Filter.h"
+#include "glrenderer.h"
 
 /*!
  \brief Player class
@@ -29,6 +30,8 @@ private:
     QMutex filterMutex;
     bool end = false;
     Filter *filter = NULL;
+
+    GLRenderer renderer;
 
 protected:
     /*!
