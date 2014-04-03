@@ -25,7 +25,4 @@ ui_*.h
 /release/*  
 /build
 /build/*
-<<<<<<< HEAD
 .qmake.stash
-=======
->>>>>>> FETCH_HEAD
