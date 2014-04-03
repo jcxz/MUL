@@ -23,3 +23,5 @@ ui_*.h
 /debug/*
 /release
 /release/*  
+/build
+/build/*
