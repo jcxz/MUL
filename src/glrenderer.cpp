@@ -4,38 +4,40 @@ GLRenderer::GLRenderer(QObject *parent) :
     QGLWidget(QGLFormat(QGL::SampleBuffers))
 {
     setMinimumSize(320,240);
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void GLRenderer::renderImage(const QImage &_frame)
+void GLRenderer::renderPixmap(const QPixmap &_pixmap)
 {
-    //frame = _frame;
-    frame = QGLWidget::convertToGLFormat(_frame);
-    this->updateGL();
+    pixmap = _pixmap;
+    resizeEvent(NULL);
+    this->update();
 }
 
-void GLRenderer::initializeGL()
+void GLRenderer::resizeEvent(QResizeEvent *)
 {
-    glClearColor(0.0f,0.0f,0.0f,1.0f);
+    //retain aspect ratio when changing size
+    float srcAspectRt = pixmap.width() / (float)pixmap.height();
+    float dstAspectRt = this->width() / (float)this->height();
+    float width;
+
+    if (srcAspectRt > dstAspectRt)
+        width = this->width();
+    else
+        width = this->height() * srcAspectRt;
+
+    double scale = width / pixmap.width();
+
+    scaleMat = QTransform().scale(scale, scale);
+    scaleMatI = scaleMat.inverted();
 }
 
-void GLRenderer::paintGL()
+void GLRenderer::paintEvent(QPaintEvent *e)
 {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(0.0f,0.0f,0.0f,1.0f);
+    QPainter p(this);
 
-    if(!frame.isNull()) {
-        frame = frame.scaledToWidth(this->width());
-        glDrawPixels(frame.width(), frame.height(),
-                     GL_RGBA, GL_UNSIGNED_BYTE, frame.bits());
-    }
-}
-
-void GLRenderer::resizeGL(int w, int h)
-{
-    glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, w, h, 0, 0, 1);
-    //gluPerspective(60, (GLfloat)w / (GLfloat)h, 1.0, 100.0);
-    glMatrixMode(GL_MODELVIEW);
+    p.setRenderHint(QPainter::SmoothPixmapTransform);
+    p.setWorldTransform(scaleMat);
+    QRect scaled = scaleMatI.mapRect(e->rect());
+    p.drawPixmap(scaled, pixmap, scaled);
 }

@@ -27,13 +27,7 @@ Controller::~Controller()
 
 void Controller::renderFrame(const cv::Mat &frame)
 {
-    //resize video frame and display it in GUI
-    mainWin->ui->label->setPixmap(
-                QPixmap::fromImage(
-                    matToQimg.convert(frame)).scaled(mainWin->ui->label->width(),
-                                                     mainWin->ui->label->height(),
-                                                     Qt::KeepAspectRatio));
-    //renderer.renderImage(matToQimg.convert(frame));
+    mainWin->ui->widget->renderPixmap(QPixmap::fromImage(matToQimg.convert(frame)));
 }
 
 void Controller::play() {

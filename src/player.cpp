@@ -11,8 +11,13 @@ void Player::run()
 
         input >> frame;
 
-        if(end || frame.empty())
+        if(end)
             break;
+        //video reached its end
+        if(frame.empty()) {
+            input.set(CV_CAP_PROP_POS_FRAMES, 0); // rewind video
+            break;
+        }
 
         //if any filter is selected, use it
         filterMutex.lock();

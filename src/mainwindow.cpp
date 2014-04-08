@@ -7,12 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->statusBar->addWidget(ui->lblStatusBar);
-
     //instantiate the controller
     Controller::instantiate();
     //set up displaying window
     Controller::ctrlInst()->setMainWindow(this);
+
+    ui->statusBar->addWidget(ui->lblStatusBar);
+    ui->lblStatusBar->setText("");
 }
 
 MainWindow::~MainWindow()
