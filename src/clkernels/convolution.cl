@@ -38,7 +38,7 @@ __kernel void conv2D(__read_only image2d_t src,
 
 
 
-__kernel void conv1D_horizontal(__read_only image2d_t src,
+__kernel void conv2D_horizontal(__read_only image2d_t src,
                                 __write_only image2d_t dst,
                                 __constant samplet_t sampler,
                                 __constant float *filter,
@@ -60,7 +60,7 @@ __kernel void conv1D_horizontal(__read_only image2d_t src,
 
 
 
-__kernel void conv1D_vertical(__read_only image2d_t src,
+__kernel void conv2D_vertical(__read_only image2d_t src,
                               __write_only image2d_t dst,
                               __constant samplet_t sampler,
                               __constant float *filter,

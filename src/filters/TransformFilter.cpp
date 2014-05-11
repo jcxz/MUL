@@ -1,7 +1,6 @@
 #include "TransformFilter.h"
 #include "opencl/qclcontext.h"
-
-#include <iostream>
+#include "debug.h"
 
 
 
@@ -14,7 +13,7 @@ bool TransformFilter::init(void)
   m_program = m_ctx->buildProgramFromSourceFile(CLSRCFILE("transform.cl"));
   if (m_program.isNull())
   {
-    std::cerr << "Failed to create OpenCL program: " << m_program.log().toStdString() << std::endl;
+    ERRORM("Failed to create OpenCL program: " << m_program.log().toStdString());
     return false;
   }
 
@@ -22,7 +21,7 @@ bool TransformFilter::init(void)
   m_kernel = m_program.createKernel("transform");
   if (m_kernel.isNull())
   {
-    std::cerr << "Failed to create OpenCL program: " << m_program.log().toStdString() << std::endl;
+    ERRORM("Failed to create OpenCL program: " << m_program.log().toStdString());
     return false;
   }
 
@@ -30,7 +29,7 @@ bool TransformFilter::init(void)
   m_matrix_ocl = m_ctx->createBufferCopy(m_matrix, sizeof(m_matrix), QCLMemoryObject::ReadOnly);
   if (m_matrix_ocl.isNull())
   {
-    std::cerr << "Failed to create matrix buffer" << std::endl;
+    ERRORM("Failed to create matrix buffer");
     return false;
   }
 

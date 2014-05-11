@@ -1,7 +1,6 @@
 #include "PointFilter.h"
 #include "opencl/qclcontext.h"
-
-#include <iostream>
+#include "debug.h"
 
 
 
@@ -14,7 +13,7 @@ bool PointFilter::init(const char *program, const char *kernel)
   m_program = m_ctx->buildProgramFromSourceFile(program);
   if (m_program.isNull())
   {
-    std::cerr << "Failed to create OpenCL program: " << m_program.log().toStdString() << std::endl;
+    ERRORM("Failed to create OpenCL program: " << m_program.log().toStdString());
     return false;
   }
 
@@ -22,7 +21,7 @@ bool PointFilter::init(const char *program, const char *kernel)
   m_kernel = m_program.createKernel(kernel);
   if (m_kernel.isNull())
   {
-    std::cerr << "Failed to create OpenCL program: " << m_program.log().toStdString() << std::endl;
+    ERRORM("Failed to create OpenCL program: " << m_program.log().toStdString());
     return false;
   }
 

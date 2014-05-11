@@ -268,7 +268,7 @@ QImage FilterPipeline::run(const QImage & src)
   }
   else
   {
-    std::cerr << "WARNING: There are no filters in the pipeline" << std::endl;
+    WARNM("There are no filters in the pipeline");
   }
 
   return QImage();
