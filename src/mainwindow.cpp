@@ -78,3 +78,25 @@ void MainWindow::on_rbHistFlt_toggled(bool /*checked*/)
 {
     Controller::ctrlInst()->selectFilter(Controller::HIST_FLT);
 }
+
+void MainWindow::on_pbAddFilter_clicked()
+{
+    if(addFltDlg.exec()) {
+        std::cout << "addFilterDialog accepted" << std::endl;
+
+        //display list of active filters
+        std::vector<std::pair<std::string, Filter*> > filterVec;
+        filterVec = Controller::ctrlInst()->getActiveFilters();
+
+        ui->lwFilters->clear();
+
+        for(auto it = filterVec.begin(); it != filterVec.end(); it++) {
+            ui->lwFilters->addItem(QString::fromStdString(it->first));
+        }
+    }
+}
+
+void MainWindow::on_pbDeleteFilter_clicked()
+{
+
+}

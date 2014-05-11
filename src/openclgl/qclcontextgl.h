@@ -42,8 +42,8 @@
 #ifndef QCLCONTEXTGL_H
 #define QCLCONTEXTGL_H
 
-//#include "qclcontext.h"
-#include "src/opencl/qclcontext.h"
+#include "qclcontext.h"
+//#include "src/opencl/qclcontext.h"
 #include <QtOpenGL/qgl.h>
 #if QT_VERSION >= 0x040700
 #include <QtOpenGL/qglbuffer.h>
