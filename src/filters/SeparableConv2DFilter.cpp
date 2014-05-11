@@ -11,7 +11,7 @@ bool SeparableConv2DFilter::init(QCLSampler::AddressingMode mode)
   if (m_ctx == nullptr) return (m_good = true);
 
   // compile program
-  m_program = m_ctx->buildProgramFromSourceFile("convolution.cl");
+  m_program = m_ctx->buildProgramFromSourceFile(CLSRCFILE("convolution.cl"));
   if (m_program.isNull())
   {
     ERRORM("Failed to create OpenCL program: " << m_program.log().toStdString());
@@ -39,7 +39,7 @@ bool SeparableConv2DFilter::init(QCLSampler::AddressingMode mode)
 
 bool SeparableConv2DFilter::setClampMode(QCLSampler::AddressingMode mode)
 {
-  m_sampler = m_ctx->createSampler(true, mode, QCLSampler::Nearest);
+  m_sampler = m_ctx->createSampler(false, mode, QCLSampler::Nearest);
   if (m_sampler.isNull())
   {
     ERRORM("Failed to create OpenCL sampler with given addressing mode: " << m_ctx->lastError());

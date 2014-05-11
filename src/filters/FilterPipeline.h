@@ -118,6 +118,7 @@ inline Filter *FilterPipeline::addFilter2(const char *name)
 
 inline int FilterPipeline::addFilter(Filter *filter)
 {
+  if (filter == nullptr) return INVALID_FILTER_INDEX;
   int idx = m_filter_list.size();
   m_filter_list.push_back(tFilterPtr(filter));
   return idx;

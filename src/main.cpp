@@ -63,7 +63,7 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
 
   //pipeline.addFilter("grayscale");
 
-#if 1
+#if 0
   Conv2DFilter *conv2d_f = static_cast<Conv2DFilter *>(pipeline.addFilter2("conv2d"));
   if (conv2d_f == nullptr) return false;
   float kern_2d[] = { 1.0f / 16.0f, 1.0f / 8.0f, 1.0f / 16.0f,
@@ -72,7 +72,16 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
   conv2d_f->setFilterKernel(kern_2d, 3);
 #endif
 
-  //SeparableConv2DFilter *conv_f = static_cast<SeparableConv2DFilter *>(pipeline.addFilter2(""));
+#if 0
+  SeparableConv2DFilter *conv2d_sep_f = static_cast<SeparableConv2DFilter *>(pipeline.addFilter2("separableconv2d"));
+  if (conv2d_sep_f == nullptr) return false;
+  //float kern_2d_sep[] = { -1.0f, 0.0f, 1.0f };
+  float kern_2d_sep[] = { 1.0f / 4.0f,  1.0f / 2.0f, 1.0f / 4.0f };
+  conv2d_sep_f->setVerticalFilterKernel(kern_2d_sep, 3);
+  conv2d_sep_f->setHorizontalFilterKernel(kern_2d_sep, 3);
+#endif
+
+  pipeline.addFilter("sobel");
 
   //TransformFilter *filter = static_cast<TransformFilter *>(pipeline.addFilter2("transform"));
   //filter->setMatrix(1.0f, 0.0f, -100.0f, 0.0f, 1.0f, -100.0f);

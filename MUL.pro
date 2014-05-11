@@ -92,10 +92,10 @@ HEADERS += \
     src/filters/SepiaFilter.h \
     src/filters/GrayScaleFilter.h \
     src/filters/TransformFilter.h \
-    src/filters/ConvolutionFilter.h \
     src/filters/ConvFilterBase.h \
     src/filters/Conv2DFilter.h \
     src/filters/SeparableConv2DFilter.h \
+    src/filters/SobelFilter.h \
     \
     src/mainwindow.h \
     src/mattoqimage.h \
@@ -129,10 +129,10 @@ SOURCES += \
     src/filters/PointFilter.cpp \
     src/filters/GrayScaleFilter.cpp \
     src/filters/TransformFilter.cpp \
-    src/filters/ConvolutionFilter.cpp \
     src/filters/ConvFilterBase.cpp \
     src/filters/Conv2DFilter.cpp \
     src/filters/SeparableConv2DFilter.cpp \
+    src/filters/SobelFilter.cpp \
     \
     src/mainwindow.cpp \
     src/mattoqimage.cpp \
