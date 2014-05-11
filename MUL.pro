@@ -52,14 +52,6 @@ win32 {
     DEFINES += UTEST
 }
 
-#Specify build folder
-#release: DESTDIR = build/release
-#debug:   DESTDIR = build/debug
-
-#OBJECTS_DIR = $$DESTDIR/obj
-#MOC_DIR = $$DESTDIR/moc
-#RCC_DIR = $$DESTDIR/qrc
-#UI_DIR = $$DESTDIR/ui
 
 release: BUILD_DIR = build/release
 debug:   BUILD_DIR = build/debug
@@ -90,7 +82,7 @@ HEADERS += \
     src/opencl/qclext_p.h \
     \
     src/openclgl/qclcontextgl.h \
-    src/openclgl/qcl_gl_p.h \
+    src/openclgl/qcl_gl_p.h \    
     \
     src/debug.h \
     src/filters/FilterPipeline.h \
@@ -110,7 +102,8 @@ HEADERS += \
     src/controller.h \
     src/player.h \
     src/converter.h \
-    src/glrenderer.h
+    src/glrenderer.h \
+    src/addfilterdialog.h
 
 SOURCES += \
     src/opencl/qclbuffer.cpp \
@@ -146,9 +139,11 @@ SOURCES += \
     src/controller.cpp \
     src/player.cpp \
     src/converter.cpp \
-    src/glrenderer.cpp
+    src/glrenderer.cpp \
+    src/addfilterdialog.cpp
 
-FORMS += src/mainwindow.ui
+FORMS += src/mainwindow.ui \
+    src/addfilterdialog.ui
 
 OTHER_FILES += \
     $${CL_KERNELS_DIR}/colorinvert.cl \
