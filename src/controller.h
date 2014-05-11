@@ -8,7 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include "player.h"
 #include "mattoqimage.h"
-#include "FilterGray.h"
+//#include "FilterGray.h"
 //#include "filterhistogrameq.h"
 #include "converter.h"
 #include "FilterPipeline.h"
