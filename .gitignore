@@ -14,14 +14,9 @@
 Makefile
 Makefile.Debug
 Makefile.Release
-object_script.MUL.Debug
-object_script.MUL.Release
 
 # ignore generated ui headers
 ui_*.h
-
-# exe files
-MUL.exe
 
 # ignore debug and release directories
 /debug
@@ -31,7 +26,3 @@ MUL.exe
 /build
 /build/*
 .qmake.stash
-
-# other stuff
-/bordel
-/border/*

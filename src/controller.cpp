@@ -132,20 +132,3 @@ void Controller::convertFinished(bool result)
     controlsEnabled(true);
     writeMsg(result ? "Video successfully converted" : "Video conversion incomplete!");
 }
-
-void Controller::addFilter(std::string fltName) {
-    Filter *flt;
-    if(flt = pipeline->addFilter2(fltName.c_str())) {
-        filterVec.push_back(std::pair<std::string, Filter*>(fltName, flt));
-    }else {
-        std::cerr << "Controller: Error adding filter" << std::endl;
-    }
-}
-
-void Controller::removeFilter(int index) {
-    pipeline->removeFilter(filterVec[index].second);
-}
-
-std::vector<std::pair<std::string, Filter*> > Controller::getActiveFilters() {
-    return filterVec;
-}

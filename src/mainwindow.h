@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include "controller.h"
-#include "addfilterdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,12 +38,8 @@ private slots:
 
     void on_rbHistFlt_toggled(bool);
 
-    void on_pbAddFilter_clicked();
-
-    void on_pbDeleteFilter_clicked();
-
 private:
-    AddFilterDialog addFltDlg;
+
 };
 
 #endif // MAINWINDOW_H

@@ -4,12 +4,6 @@
 #include <stdexcept>
 #include <string>
 
-// A macro to resolve path to OpenCL kernel source files
-#define FILTER_H_STR_(x) #x
-#define FILTER_H_STR(x) FILTER_H_STR_(x)
-#define CLSRCFILE(filename) FILTER_H_STR(CLSOURCEPATH) "/" filename
-//#define CLSOURCE(filename) (CLSOURCEPATH "/" filename)
-
 
 class QCLContext;
 class QCLImage2D;
