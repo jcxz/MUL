@@ -3,7 +3,7 @@
 
 
 
-bool ConvFilterBase::setFilterKernel(const float *filter, int size,
+bool ConvFilterBase::setFilterKernel(const float *filter, int size, int filter_w,
                                      QCLBuffer & filter_ocl,
                                      QCLKernel & kernel_ocl,
                                      int & filter_ocl_size)
@@ -20,8 +20,8 @@ bool ConvFilterBase::setFilterKernel(const float *filter, int size,
     filter_ocl_size = size;
 
     kernel_ocl.setArg(FILTER_IDX, filter_ocl);
-    kernel_ocl.setArg(FILTER_SIZE_IDX, size);
-    kernel_ocl.setArg(FILTER_SIZE_HALF_IDX, (size - 1) / 2);
+    kernel_ocl.setArg(FILTER_SIZE_IDX, filter_w);
+    kernel_ocl.setArg(FILTER_SIZE_HALF_IDX, (filter_w - 1) / 2);
   }
   else
   {
@@ -36,10 +36,10 @@ bool ConvFilterBase::setFilterKernel(const float *filter, int size,
 }
 
 
-ConvFilterBase::FilterKernelMapProxy<float> ConvFilterBase::mapFilterKernel(int size,
-                                                                            QCLBuffer & filter_ocl,
-                                                                            QCLKernel & kernel_ocl,
-                                                                            int & filter_ocl_size)
+float *ConvFilterBase::mapFilterKernel(int size, int filter_w,
+                                       QCLBuffer & filter_ocl,
+                                       QCLKernel & kernel_ocl,
+                                       int & filter_ocl_size)
 {
   if (size != filter_ocl_size)
   {
@@ -47,15 +47,15 @@ ConvFilterBase::FilterKernelMapProxy<float> ConvFilterBase::mapFilterKernel(int 
     if (filter_ocl.isNull())
     {
       ERRORM("Failed to create convolution kernel buffer: " << m_ctx->lastError());
-      return FilterKernelMapProxy<float>(nullptr, filter_ocl);
+      return nullptr;
     }
 
     filter_ocl_size = size;
 
     kernel_ocl.setArg(FILTER_IDX, filter_ocl);
-    kernel_ocl.setArg(FILTER_SIZE_IDX, size);
-    kernel_ocl.setArg(FILTER_SIZE_HALF_IDX, (size - 1) / 2);
+    kernel_ocl.setArg(FILTER_SIZE_IDX, filter_w);
+    kernel_ocl.setArg(FILTER_SIZE_HALF_IDX, (filter_w - 1) / 2);
   }
 
-  return FilterKernelMapProxy<float>(filter_ocl.map(QCLBuffer::WriteOnly), filter_ocl);
+  return (float *) filter_ocl.map(QCLBuffer::WriteOnly);
 }

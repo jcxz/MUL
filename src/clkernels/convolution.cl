@@ -2,6 +2,7 @@
          the HW texture interpolation trick
  */
 
+//#pragma OPENCL EXTENSION cl_amd_printf : enable
 
 #define FILTER(row, col) filter[row * filter_size + col]
 
@@ -13,11 +14,11 @@
 
 __kernel void conv2D(__read_only image2d_t src,
                      __write_only image2d_t dst,
-                     __constant samplet_t sampler,
+                     sampler_t sampler,
                      __constant float *filter,
                      const int filter_size,
                      const int filter_size_half)
-{
+{  
   int2 coords = (int2) (get_global_id(0) + filter_size_half,
                         get_global_id(1) + filter_size_half);
   float4 sum = (float4) (0.0f, 0.0f, 0.0f, 0.0f);
@@ -40,7 +41,8 @@ __kernel void conv2D(__read_only image2d_t src,
 
 __kernel void conv2D_horizontal(__read_only image2d_t src,
                                 __write_only image2d_t dst,
-                                __constant samplet_t sampler,
+                                //__constant sampler_t sampler,
+                                sampler_t sampler,
                                 __constant float *filter,
                                 const int filter_size,
                                 const int filter_size_half)
@@ -62,7 +64,8 @@ __kernel void conv2D_horizontal(__read_only image2d_t src,
 
 __kernel void conv2D_vertical(__read_only image2d_t src,
                               __write_only image2d_t dst,
-                              __constant samplet_t sampler,
+                              //__constant sampler_t sampler,
+                              sampler_t sampler,
                               __constant float *filter,
                               const int filter_size,
                               const int filter_size_half)

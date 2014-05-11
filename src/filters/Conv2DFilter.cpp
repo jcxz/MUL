@@ -32,7 +32,7 @@ bool Conv2DFilter::init(QCLSampler::AddressingMode mode)
 
 bool Conv2DFilter::setClampMode(QCLSampler::AddressingMode mode)
 {
-  m_sampler = m_ctx->createSampler(true, mode, QCLSampler::Nearest);
+  m_sampler = m_ctx->createSampler(false, mode, QCLSampler::Nearest);
   if (m_sampler.isNull())
   {
     ERRORM("Failed to create OpenCL sampler with given addressing mode: " << m_ctx->lastError());

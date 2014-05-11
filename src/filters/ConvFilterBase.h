@@ -20,25 +20,6 @@ class ConvFilterBase : public Filter
 
     static constexpr int INVALID_FILTER_SIZE = -1;
 
-  protected:
-    template <typename T>
-    class FilterKernelMapProxy
-    {
-      public:
-        FilterKernelMapProxy(void *ptr, QCLBuffer & buf)
-          : m_ptr((T*) ptr), m_buf(&buf)
-        { assert(m_buf != nullptr); }
-
-        ~FilterKernelMapProxy(void) { m_buf->unmap(m_ptr); }
-
-        operator T*(void) const { return m_ptr; }
-        T *ptr(void) const { return m_ptr; }
-
-      private:
-        T *m_ptr;
-        QCLBuffer *m_buf;
-    };
-
   public:
     explicit ConvFilterBase(QCLContext *ctx)
       : Filter(ctx)
@@ -50,15 +31,16 @@ class ConvFilterBase : public Filter
     virtual bool runCL(const QCLImage2D & src, int w, int h, QCLImage2D & dst) override = 0;
 
   protected:
-    bool setFilterKernel(const float *filter, int size,
+    // Nastavuje
+    bool setFilterKernel(const float *filter, int size, int filter_w,
                          QCLBuffer & filter_ocl,
                          QCLKernel & kernel_ocl,
                          int & filter_ocl_size);
 
-    FilterKernelMapProxy<float> mapFilterKernel(int size,
-                                                QCLBuffer & filter_ocl,
-                                                QCLKernel & kernel_ocl,
-                                                int & filter_ocl_size);
+    float *mapFilterKernel(int size, int filter_w,
+                           QCLBuffer & filter_ocl,
+                           QCLKernel & kernel_ocl,
+                           int & filter_ocl_size);
 
   protected:
     QCLProgram m_program;

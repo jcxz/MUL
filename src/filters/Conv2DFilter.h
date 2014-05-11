@@ -26,11 +26,31 @@ class Conv2DFilter : public ConvFilterBase
 
     bool setClampMode(QCLSampler::AddressingMode mode);
 
+    /**
+     * @brief setFilterKernel sets the filter kernel to be used for convolution
+     * @param kernel the kernel to be used
+     * @param size the width of the kernel (number of columns)
+     * @return true on success
+     */
     bool setFilterKernel(const float *kernel, int size)
-    { return ConvFilterBase::setFilterKernel(kernel, size, m_filter_ocl, m_kernel, m_filter_size); }
+    {
+      return ConvFilterBase::setFilterKernel(kernel, size * size, size,
+                                             m_filter_ocl, m_kernel, m_filter_size);
+    }
 
-    FilterKernelMapProxy<float> mapFilterKernel(int size)
-    { return ConvFilterBase::mapFilterKernel(size, m_filter_ocl, m_kernel, m_filter_size); }
+    /**
+     * @brief mapFilterKernel maps the convolution kernel's buffer to memory.
+     * In case the buffer is not created yet, it will create with given width.
+     * @param size the size width of the kernel
+     * @return a poitner to the mapped memory region, or nullptr on error
+     */
+    float *mapFilterKernel(int size)
+    {
+      return ConvFilterBase::mapFilterKernel(size, size * size,
+                                             m_filter_ocl, m_kernel, m_filter_size);
+    }
+
+    void unmapFilterKernel(float *ptr) { m_filter_ocl.unmap(ptr); }
 
   private:
     bool init(QCLSampler::AddressingMode mode = QCLSampler::ClampToEdge);

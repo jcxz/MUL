@@ -3,6 +3,8 @@
 #include "FilterPipeline.h"
 #include "TransformFilter.h"
 #include "GrayScaleFilter.h"
+#include "SeparableConv2DFilter.h"
+#include "Conv2DFilter.h"
 #include "opencl/qclcontext.h"
 
 #include <iostream>
@@ -30,6 +32,12 @@ static bool convFrame(const char *srcfile, const char *dstfile, FilterPipeline &
     return false;
   }
 
+  //if (!src.save("bordel/orig.png"))
+  //{
+  //  std::cerr << "Failed to save image to file " << "bordel/orig.png" << std::endl;
+  //  return false;
+  //}
+
   QImage dst(pipeline.run(src));
 
   if (dst.isNull())
@@ -50,30 +58,26 @@ static bool convFrame(const char *srcfile, const char *dstfile, FilterPipeline &
 
 static bool testFilterPipeline2Frames(QCLContext *ctx)
 {
-  std::cerr << __FUNCTION__ << std::endl;
-
-  // setup filter pipeline
+  /* setup filter pipeline */
   FilterPipeline pipeline(ctx);
-
-  pipeline.addFilter("grayscale");
-
-  //Filter *f = pipeline.addFilter2("grayscale");
-  //f->setCLContext(nullptr);
-
-  TransformFilter *filter = static_cast<TransformFilter *>(pipeline.addFilter2("transform"));
-  filter->setMatrix(1.0f, 0.0f, -100.0f, 0.0f, 1.0f, -100.0f);
-
-  pipeline.moveFilter(0, 1);
 
   //pipeline.addFilter("grayscale");
 
-  //Filter *f = pipeline.addFilter2("grayscale");
-  //f->setCLContext(nullptr);
+#if 1
+  Conv2DFilter *conv2d_f = static_cast<Conv2DFilter *>(pipeline.addFilter2("conv2d"));
+  if (conv2d_f == nullptr) return false;
+  float kern_2d[] = { 1.0f / 16.0f, 1.0f / 8.0f, 1.0f / 16.0f,
+                      1.0f / 8.0f,  1.0f / 4.0f, 1.0f / 8.0f,
+                      1.0f / 16.0f, 1.0f / 8.0f, 1.0f / 16.0f };
+  conv2d_f->setFilterKernel(kern_2d, 3);
+#endif
 
-  //filter = static_cast<TransformFilter *>(pipeline.addFilter2("transform"));
-  //filter->setMatrix(0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f);
+  //SeparableConv2DFilter *conv_f = static_cast<SeparableConv2DFilter *>(pipeline.addFilter2(""));
 
-  // run the pipeline
+  //TransformFilter *filter = static_cast<TransformFilter *>(pipeline.addFilter2("transform"));
+  //filter->setMatrix(1.0f, 0.0f, -100.0f, 0.0f, 1.0f, -100.0f);
+
+  /* run the pipeline */
   bool ret = convFrame(IN_FRAME1, OUT_FRAME1, pipeline);
 
   ret = ret && convFrame(IN_FRAME2, OUT_FRAME2, pipeline);

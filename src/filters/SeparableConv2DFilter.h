@@ -32,17 +32,46 @@ class SeparableConv2DFilter : public ConvFilterBase
 
     bool setClampMode(QCLSampler::AddressingMode mode);
 
+    /**
+     * @brief setHorizontalFilterKernel set the filter kernel to be used
+     * for convolution in horizontal direction
+     * @param kernel the kernel values
+     * @param size the number of elements in the kernels
+     * @return true on success, false otherwise
+     */
     bool setHorizontalFilterKernel(const float *kernel, int size)
-    { return setFilterKernel(kernel, size, m_filter_ocl_horz, m_kernel_horz, m_filter_size_horz); }
+    {
+      return setFilterKernel(kernel, size, size, m_filter_ocl_horz,
+                             m_kernel_horz, m_filter_size_horz);
+    }
 
+    /**
+     * @brief setVerticalFilterKernel set the filter kernel to be used
+     * for convolution in vertical direction
+     * @param kernel the kernel values
+     * @param size the number of elements in the kernel
+     * @return true on succes, false otherwise
+     */
     bool setVerticalFilterKernel(const float *kernel, int size)
-    { return setFilterKernel(kernel, size, m_filter_ocl_vert, m_kernel_vert, m_filter_size_vert); }
+    {
+      return setFilterKernel(kernel, size, size, m_filter_ocl_vert,
+                             m_kernel_vert, m_filter_size_vert);
+    }
 
-    FilterKernelMapProxy<float> mapHorizontalFilterKernel(int size)
-    { return mapFilterKernel(size, m_filter_ocl_horz, m_kernel_horz, m_filter_size_horz); }
+    float *mapHorizontalFilterKernel(int size)
+    {
+      return mapFilterKernel(size, size, m_filter_ocl_horz,
+                             m_kernel_horz, m_filter_size_horz);
+    }
 
-    FilterKernelMapProxy<float> mapVerticalFilterKernel(int size)
-    { return mapFilterKernel(size, m_filter_ocl_vert, m_kernel_vert, m_filter_size_vert); }
+    float *mapVerticalFilterKernel(int size)
+    {
+      return mapFilterKernel(size, size, m_filter_ocl_vert,
+                             m_kernel_vert, m_filter_size_vert);
+    }
+
+    void unmapHorizontalFilterKernel(float *ptr) { m_filter_ocl_horz.unmap(ptr); }
+    void unmapVerticalFilterKernel(float *ptr) { m_filter_ocl_vert.unmap(ptr); }
 
   private:
     bool init(QCLSampler::AddressingMode mode = QCLSampler::ClampToEdge);

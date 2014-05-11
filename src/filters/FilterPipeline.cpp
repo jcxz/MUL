@@ -3,6 +3,8 @@
 #include "SepiaFilter.h"
 #include "ColorInvertFilter.h"
 #include "TransformFilter.h"
+#include "Conv2DFilter.h"
+#include "SeparableConv2DFilter.h"
 #include "opencl/qclcontext.h"
 #include "debug.h"
 
@@ -30,6 +32,14 @@ Filter* FilterPipeline::createFilter(const char *name) const
   else if (strcmp(name, "transform") == 0)
   {
     filter = new TransformFilter(m_ctx);
+  }
+  else if (strcmp(name, "conv2d") == 0)
+  {
+    filter = new Conv2DFilter(m_ctx);
+  }
+  else if (strcmp(name, "separableconv2d") == 0)
+  {
+    filter = new SeparableConv2DFilter(m_ctx);
   }
   else
   {
