@@ -12,6 +12,7 @@
 #include "converter.h"
 #include "FilterPipeline.h"
 #include "opencl/qclcontext.h"
+#include "TransformFilter.h"
 
 #include <QtConcurrent/QtConcurrent>
 
@@ -125,7 +126,7 @@ public:
     void stopConvertToFile();
     void renderQFrame(const QImage &frame);
     void setCLContext(QCLContext *ctx);
-    void addFilter(std::string fltName);
+    void addFilter(std::string fltName, std::vector<std::string> args);
     std::vector<std::pair<std::string, Filter *> > getActiveFilters();
     void removeFilter(int index);
 signals:

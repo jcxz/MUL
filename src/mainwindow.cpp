@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->statusBar->addWidget(ui->lblStatusBar);
     ui->lblStatusBar->setText("");
+
 }
 
 MainWindow::~MainWindow()
@@ -79,24 +80,32 @@ void MainWindow::on_rbHistFlt_toggled(bool /*checked*/)
     Controller::ctrlInst()->selectFilter(Controller::HIST_FLT);
 }
 
+void MainWindow::displayCurrFilters() {
+    //display list of active filters
+    std::vector<std::pair<std::string, Filter*> > filterVec;
+    filterVec = Controller::ctrlInst()->getActiveFilters();
+
+    ui->lwFilters->clear();
+
+    int i = 1;
+    for(auto it = filterVec.begin(); it != filterVec.end(); it++) {
+        ui->lwFilters->addItem(QString::number(i) + ": " + QString::fromStdString(it->first));
+        i++;
+    }
+}
+
 void MainWindow::on_pbAddFilter_clicked()
 {
     if(addFltDlg.exec()) {
         std::cout << "addFilterDialog accepted" << std::endl;
-
-        //display list of active filters
-        std::vector<std::pair<std::string, Filter*> > filterVec;
-        filterVec = Controller::ctrlInst()->getActiveFilters();
-
-        ui->lwFilters->clear();
-
-        for(auto it = filterVec.begin(); it != filterVec.end(); it++) {
-            ui->lwFilters->addItem(QString::fromStdString(it->first));
-        }
+        displayCurrFilters();
     }
 }
 
 void MainWindow::on_pbDeleteFilter_clicked()
 {
-
+    if(ui->lwFilters->currentRow() >= 0) {
+        Controller::ctrlInst()->removeFilter(ui->lwFilters->currentRow());
+        displayCurrFilters();
+    }
 }

@@ -112,7 +112,8 @@ void Controller::convertToFile(QString &fileName)
     qDebug() << "CONVERT" << converter.isFinished();
     if(!converter.isRunning()) {
         pause(); //pause playing if it is running
-        converter.convert(player.getCurrInput(), player.getCurrFilter(), fileName);
+        converter.convert(player.getCurrInput(), player.getCurrFilter(),
+                          fileName, pipeline);
     }
     else
         std::cerr << "Controller: Trying to start already running thread of class Converter" << std::endl;
@@ -133,17 +134,62 @@ void Controller::convertFinished(bool result)
     writeMsg(result ? "Video successfully converted" : "Video conversion incomplete!");
 }
 
-void Controller::addFilter(std::string fltName) {
+void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
     Filter *flt;
-    if(flt = pipeline->addFilter2(fltName.c_str())) {
-        filterVec.push_back(std::pair<std::string, Filter*>(fltName, flt));
+    std::string name;
+    bool resume = false;
+
+    if((flt = pipeline->addFilter2(fltName.c_str()))) {
+        if((resume = player.isRunning())) {
+            pause();
+        }
+
+        if (fltName == "grayscale")
+        {
+          name = "Grayscale";
+        }
+        else if (fltName ==  "sepia")
+        {
+          name = "Sepia";
+        }
+        else if (fltName == "colorinvert")
+        {
+          name = "Color inversion";
+        }
+        else if (fltName == "transform")
+        {
+          name = "Transformation";
+          //set arguments
+          TransformFilter *filter = dynamic_cast<TransformFilter*>(flt);
+          float m[args.size()];
+          for(int i = 0; i < args.size(); i++) {
+              if(!args[i].empty())
+                m[i] = stof(args[i]);
+          }
+          filter->setMatrix(m);
+        }
+
+
+        filterVec.push_back(std::pair<std::string, Filter*>(name, flt));
+
+        if(resume)
+            play();
     }else {
         std::cerr << "Controller: Error adding filter" << std::endl;
     }
 }
 
 void Controller::removeFilter(int index) {
+    bool resume = false;
+    if((resume = player.isRunning())) {
+        pause();
+    }
+
     pipeline->removeFilter(filterVec[index].second);
+    filterVec.erase(filterVec.begin() + index);
+
+    if(resume)
+        play();
 }
 
 std::vector<std::pair<std::string, Filter*> > Controller::getActiveFilters() {

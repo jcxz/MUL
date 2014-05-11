@@ -6,6 +6,7 @@
 */
 
 #include "mattoqimage.h"
+#include <iostream>
 
 MatToQimage::MatToQimage()
 {
@@ -39,4 +40,23 @@ QImage MatToQimage::convert(const cv::Mat &mat)
     }
 
     return qImage.copy();
+}
+
+cv::Mat MatToQimage::qImageToMat(QImage const& src)
+{
+    cv::Mat tmp;
+    cv::Mat dst;
+
+    if(src.format() == QImage::Format_ARGB32) {
+        tmp = cv::Mat(src.height(), src.width(), CV_8UC4,
+                    (unsigned char*)src.bits(),src.bytesPerLine());
+        cvtColor(tmp, dst,CV_BGRA2BGR);
+
+    } else {
+        tmp = cv::Mat(src.height(), src.width(), CV_8UC3,
+                    (unsigned char*)src.bits(),src.bytesPerLine());
+
+        cvtColor(tmp, dst,CV_RGB2BGR);
+    }
+     return dst;
 }

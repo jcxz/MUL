@@ -28,6 +28,7 @@ private:
 public:
     MatToQimage();
     QImage convert(const cv::Mat &mat);
+    static cv::Mat qImageToMat(const QImage &src);
 };
 
 #endif // MATTOQIMAGE_H

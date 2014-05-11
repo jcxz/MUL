@@ -45,6 +45,8 @@ private slots:
 
 private:
     AddFilterDialog addFltDlg;
+    void displayCurrFilters();
+    std::vector<std::string> fltNames;
 };
 
 #endif // MAINWINDOW_H

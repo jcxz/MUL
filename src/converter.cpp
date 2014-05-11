@@ -6,11 +6,13 @@ Converter::Converter(QObject *parent) :
 {
 }
 
-void Converter::convert(cv::VideoCapture *inputVideo, Filter *_filter, QString _fileName) {
+void Converter::convert(cv::VideoCapture *inputVideo, Filter *_filter,
+                        QString _fileName, FilterPipeline *fltPipeline) {
     input = inputVideo;
     filter = _filter;
     fileName = _fileName;
     end = false;
+    pipeline = fltPipeline;
     this->start(QThread::NormalPriority);
 }
 
@@ -59,6 +61,7 @@ void Converter::run()
 
     // process the individual video frames
     cv::Mat frame;
+    QImage outQFrame, inQFrame;
 
     for (unsigned int frame_i = 0; frame_i < frame_max; ++frame_i)
     {
@@ -76,8 +79,15 @@ void Converter::run()
         //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        if(filter)
 //            filter->exec(frame);
+        inQFrame = matToQimg.convert(frame);
 
-        out.write(frame);
+        if(!pipeline->isEmpty())
+            outQFrame = pipeline->run(inQFrame);
+        else
+           outQFrame = inQFrame;
+
+        //out.write(frame);
+        out.write(matToQimg.qImageToMat(outQFrame));
 
         if(frame_i % 100 == 0)
             emit(sendProgress(frame_i)); //update progress bar

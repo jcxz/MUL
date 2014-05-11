@@ -82,11 +82,11 @@ bool FilterPipeline::loadGPUImageBuffers(const QImage & img, QCLImage2D *src, QC
     if ((img.format() != QImage::Format_ARGB32) && (img.format() != QImage::Format_RGB32))
     {
       INFOM("Converting GPU source buffer format");
-      *src = m_ctx->createImage2DCopy(img.convertToFormat(QImage::Format_ARGB32), QCLMemoryObject::ReadOnly);
+      *src = m_ctx->createImage2DCopy(img.convertToFormat(QImage::Format_ARGB32), QCLMemoryObject::ReadWrite);
     }
     else
     {
-      *src = m_ctx->createImage2DCopy(img, QCLMemoryObject::ReadOnly);
+      *src = m_ctx->createImage2DCopy(img, QCLMemoryObject::ReadWrite);
     }
 
     if (src->isNull())
@@ -97,7 +97,7 @@ bool FilterPipeline::loadGPUImageBuffers(const QImage & img, QCLImage2D *src, QC
 
     // allocate the output image
     QCLImageFormat out_fmt(QCLImageFormat::Order_BGRA, QCLImageFormat::Type_Normalized_UInt8);
-    *dst = m_ctx->createImage2DDevice(out_fmt, img_size, QCLMemoryObject::WriteOnly);
+    *dst = m_ctx->createImage2DDevice(out_fmt, img_size, QCLMemoryObject::ReadWrite);
     if (dst->isNull())
     {
       ERRORM("Failed to allocate destination image on GPU: " << m_ctx->lastError());

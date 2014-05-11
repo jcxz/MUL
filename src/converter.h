@@ -4,6 +4,8 @@
 #include <QThread>
 #include "opencv2/opencv.hpp"
 #include "Filter.h"
+#include "FilterPipeline.h"
+#include "mattoqimage.h"
 
 /*!
  \brief Converter class
@@ -20,10 +22,14 @@ private:
     QString fileName = "";
     bool end = false; //inicates whether to stop processing
 
+    FilterPipeline *pipeline = NULL;
+    MatToQimage matToQimg;
+
 public:
     explicit Converter(QObject *parent = 0);
 
-    void convert(cv::VideoCapture *inputVideo, Filter *_filter, QString _fileName);
+    void convert(cv::VideoCapture *inputVideo, Filter *_filter,
+                 QString _fileName, FilterPipeline *fltPipeline);
 
     void stop();
 
