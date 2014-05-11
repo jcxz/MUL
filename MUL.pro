@@ -62,6 +62,7 @@ win32 {
 #UI_DIR = $$DESTDIR/ui
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/mattoqimage.cpp \
@@ -95,6 +96,10 @@ SOURCES += src/main.cpp \
 release: BUILD_DIR = build/release
 debug:   BUILD_DIR = build/debug
 >>>>>>> FETCH_HEAD
+=======
+release: BUILD_DIR = build/release
+debug:   BUILD_DIR = build/debug
+>>>>>>> FETCH_HEAD
 
 OBJECTS_DIR = $$BUILD_DIR/obj
 MOC_DIR = $$BUILD_DIR/moc
@@ -124,9 +129,12 @@ HEADERS += \
     src/openclgl/qclcontextgl.h \
     src/openclgl/qcl_gl_p.h \
 <<<<<<< HEAD
+<<<<<<< HEAD
     src/openclgl/qclcontextgl.h \
     src/addfilterdialog.h
 =======
+=======
+>>>>>>> FETCH_HEAD
     \
     src/debug.h \
     src/filters/FilterPipeline.h \
@@ -177,6 +185,9 @@ SOURCES += \
     src/player.cpp \
     src/converter.cpp \
     src/glrenderer.cpp
+<<<<<<< HEAD
+>>>>>>> FETCH_HEAD
+=======
 >>>>>>> FETCH_HEAD
 
 FORMS += src/mainwindow.ui \
