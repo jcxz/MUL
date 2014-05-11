@@ -4,12 +4,11 @@
 #include "Filter.h"
 #include "opencl/qclimage.h"
 
+#include <opencv2/core/core.hpp>
+#include <QImage>
 #include <vector>
 #include <memory>
 
-
-namespace cv { class Mat; }
-class QImage;
 
 
 // Class representing a graph of filters
@@ -25,57 +24,54 @@ class FilterPipeline
     FilterPipeline(QCLContext *ctx)
       : m_ctx(ctx)
       , m_filter_list()
-      , m_gpu_img_w(0)
-      , m_gpu_img_h(0)
-      , m_cpu_img_w(0)
-      , m_cpu_img_h(0)
+      , m_gpu_buf_size()
+      , m_cpu_buf_size()
     {
     }
 
-    //EDITED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    bool isEmpty() {
-        return (m_filter_list.size() == 0);
-    }
+    /*** filter graph management ***/
 
-    // filter graph management
-    int filterIndex(Filter *filter)
-    {
-      for (unsigned i = 0; i < m_filter_list.size(); ++i)
-      {
-        if (m_filter_list[i].get() == filter) return i;
-      }
-      return INVALID_FILTER_INDEX;
-    }
+    // query methods
+    inline bool isEmpty(void) const { return m_filter_list.empty(); }
+    inline int filterIndex(Filter *filter) const;
 
-    Filter *filterByIndex(int idx)
-    {
-      return (unsigned(idx) < m_filter_list.size()) ? m_filter_list[idx].get() : nullptr;
-    }
+    inline bool isValidFilterIndex(int idx) const
+    { return (unsigned(idx) < m_filter_list.size()); }
 
+    inline Filter *filterByIndex(int idx) const
+    { return (isValidFilterIndex(idx)) ? m_filter_list[idx].get() : nullptr; }
+
+    // insertion and creation methods
     int addFilter(const char *name) { return addFilter(createFilter(name)); }
+    inline Filter *addFilter2(const char *name);
+    inline int addFilter(Filter *filter);
+    inline Filter *insertFilter(int idx, const char *name);
+    inline void insertFilter(int idx, Filter *filter);
 
-    Filter *addFilter2(const char *name)
-    {
-      Filter *filter = createFilter(name);
-      addFilter(filter);
-      return filter;
-    }
+    // removal methods
+    void clear(void) { m_filter_list.clear(); }
+    void removeFilter(Filter *filter) { removeFilter(filterIndex(filter)); }
+    inline void removeFilter(int idx);
 
-    int addFilter(Filter *filter);
-    void insertFilter(int idx, Filter *filter);
+    // shuffle methods
+    void moveFilter(Filter *filter, int new_pos)
+    { return moveFilter(filterIndex(filter), new_pos); }
 
-    void removeFilter(Filter *filter);
-    void removeFilter(int idx);
+    inline void moveFilter(int cur_pos, int new_pos);
 
-    void moveFilter(Filter *filter, int new_pos);
-    void moveFilter(int cur_pos, int new_pos);
+    /*** Pipeline execution methods ***/
 
     // input image management
-    void setImage(const cv::Mat & img);
-    void setImage(const QImage & img);
+    //void setImage(const cv::Mat & img);
+    //void setImage(const QImage & img);
 
     // pipeline execution
-    QImage run(const cv::Mat & src);
+    QImage run(const cv::Mat & src)
+    {
+      // this should only use the image data provided and not copy them
+      return run(QImage(src.data, src.cols, src.rows, src.step, QImage::Format_RGB888));
+    }
+
     QImage run(const QImage & src);
 
   private:
@@ -85,23 +81,81 @@ class FilterPipeline
 
   private:
     Filter* createFilter(const char *name) const;
-    bool loadGPUImageBuffers(const unsigned char *pixels, int w, int h,
-                             QCLImage2D *src, QCLImage2D *dst);
-    bool loadCPUImageBuffers(const unsigned char *pixels, int w, int h,
-                             tPixelsPtr *src, tPixelsPtr *dst);
-    //QImage runFilters(const unsigned char *pixels, int w, int h);
-    bool runFilters(const unsigned char *src, int w, int h, unsigned char *dst);
+
+    bool loadGPUImageBuffers(const QImage & img, QCLImage2D *src, QCLImage2D *dst);
+    bool loadCPUImageBuffers(const QImage & img, QImage *src, QImage *dst);
 
   private:
     QCLContext *m_ctx;          // OpenCL context
     tFilterList m_filter_list;  // a list of pipelined filters
 
-    QCLImage2D m_gpu_img[2];  // the gpu image
-    tPixelsPtr m_cpu_img[2];  // the cpu image
-    int m_gpu_img_w;
-    int m_gpu_img_h;
-    int m_cpu_img_w;          // the size of the frame being processed
-    int m_cpu_img_h;
+    QCLImage2D m_gpu_buf[2];    // the gpu image buffer
+    QImage m_cpu_buf[2];        // the cpu image buffer
+    QSize m_gpu_buf_size;       // the buffer size
+    QSize m_cpu_buf_size;       // the buffer size
 };
+
+
+/*** Implementation of the inline methods ***/
+
+inline int FilterPipeline::filterIndex(Filter *filter) const
+{
+  for (unsigned i = 0; i < m_filter_list.size(); ++i)
+  {
+    if (m_filter_list[i].get() == filter) return i;
+  }
+  return INVALID_FILTER_INDEX;
+}
+
+
+inline Filter *FilterPipeline::addFilter2(const char *name)
+{
+  Filter *filter = createFilter(name);
+  addFilter(filter);
+  return filter;
+}
+
+
+inline int FilterPipeline::addFilter(Filter *filter)
+{
+  int idx = m_filter_list.size();
+  m_filter_list.push_back(tFilterPtr(filter));
+  return idx;
+}
+
+
+inline Filter *FilterPipeline::insertFilter(int idx, const char *name)
+{
+  Filter *f = createFilter(name);
+  insertFilter(idx, f);
+  return f;
+}
+
+
+inline void FilterPipeline::insertFilter(int idx, Filter *filter)
+{
+  if (isValidFilterIndex(idx))
+  {
+    m_filter_list.insert(m_filter_list.begin() + idx, tFilterPtr(filter));
+  }
+}
+
+
+inline void FilterPipeline::removeFilter(int idx)
+{
+  if (isValidFilterIndex(idx))
+  {
+    m_filter_list.erase(m_filter_list.begin() + idx);
+  }
+}
+
+
+inline void FilterPipeline::moveFilter(int cur_pos, int new_pos)
+{
+  if ((isValidFilterIndex(cur_pos)) && isValidFilterIndex(new_pos))
+  {
+    m_filter_list[cur_pos].swap(m_filter_list[new_pos]);
+  }
+}
 
 #endif

@@ -1,8 +1,13 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include "Filter.h"
 
 int main(int argc, char *argv[])
 {
+  //std::cout << "CLSOURCEPATH: " << CLSOURCEPATH << std::endl;
+  //std::cout << "CLSOURCE: " << CLSOURCE("grayscale.cl") << std::endl;
+  std::cout << "CLSOURCE: " << CLSRCFILE("grayscale.cl") << std::endl;
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

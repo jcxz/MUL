@@ -4,11 +4,10 @@
 #include "ColorInvertFilter.h"
 #include "TransformFilter.h"
 #include "opencl/qclcontext.h"
+#include "debug.h"
 
 #include <QImage>
 #include <cstring>
-#include <iostream>
-#include <QDebug>
 
 
 
@@ -34,14 +33,14 @@ Filter* FilterPipeline::createFilter(const char *name) const
   }
   else
   {
-    std::cerr << "Filter named " << name << " does not exist" << std::endl;
+    ERRORM("Filter named " << name << " does not exist");
     return nullptr;
   }
 
   if (!filter->isGood())
   {
     delete filter;
-    std::cerr << "Failed to initialize filter " << name << std::endl;
+    ERRORM("Failed to initialize filter " << name);
     return nullptr;
   }
 
@@ -49,126 +48,130 @@ Filter* FilterPipeline::createFilter(const char *name) const
 }
 
 
-int FilterPipeline::addFilter(Filter *filter)
+bool FilterPipeline::loadGPUImageBuffers(const QImage & img, QCLImage2D *src, QCLImage2D *dst)
 {
-  int idx = m_filter_list.size();
-  m_filter_list.push_back(tFilterPtr(filter));
-  return idx;
+  QSize img_size(img.size());
+
+  DBGM("loadGPUImageBuffers");
+  DBGM("Saved size (width x heigth): " << m_gpu_buf_size.width() << "x" << m_gpu_buf_size.height());
+  DBGM("Frame size (width x heigth): " << img_size.width() << "x" << img_size.height());
+  DBGM("QImage::Format_ARGB32 : " << QImage::Format_ARGB32);
+  DBGM("QImage::Format_RGB32  : " << QImage::Format_RGB32);
+  DBGM("img.format()          : " << img.format());
+
+  if (img_size != m_gpu_buf_size)
+  {
+    INFOM("Reallocating GPU buffers");
+
+    // allocate the input image
+    if ((img.format() != QImage::Format_ARGB32) && (img.format() != QImage::Format_RGB32))
+    {
+      INFOM("Converting GPU source buffer format");
+      *src = m_ctx->createImage2DCopy(img.convertToFormat(QImage::Format_ARGB32), QCLMemoryObject::ReadOnly);
+    }
+    else
+    {
+      *src = m_ctx->createImage2DCopy(img, QCLMemoryObject::ReadOnly);
+    }
+
+    if (src->isNull())
+    {
+      ERRORM("Failed to allocate source image on GPU: " << m_ctx->lastError());
+      return false;
+    }
+
+    // allocate the output image
+    QCLImageFormat out_fmt(QCLImageFormat::Order_BGRA, QCLImageFormat::Type_Normalized_UInt8);
+    *dst = m_ctx->createImage2DDevice(out_fmt, img_size, QCLMemoryObject::WriteOnly);
+    if (dst->isNull())
+    {
+      ERRORM("Failed to allocate destination image on GPU: " << m_ctx->lastError());
+      return false;
+    }
+
+    // remember the image parameters for the next time
+    m_gpu_buf_size = img_size;
+  }
+  else
+  {
+    INFOM("Reusing GPU source buffer");
+
+    bool ret = false;
+
+    if ((img.format() != QImage::Format_ARGB32) && (img.format() != QImage::Format_RGB32))
+    {
+      INFOM("Converting input image pixel format to GPU pixel format");
+      ret = src->write(img.convertToFormat(QImage::Format_ARGB32));
+    }
+    else
+    {
+      ret = src->write(img);
+    }
+
+    if (!ret)
+    {
+      ERRORM("Failed to write image data to source GPU buffer: " << m_ctx->lastError());
+      return false;
+    }
+  }
+
+  return true;
 }
 
 
-QImage FilterPipeline::run(const cv::Mat & src)
+bool FilterPipeline::loadCPUImageBuffers(const QImage & img, QImage *src, QImage *dst)
 {
-  return QImage();
+  QSize img_size(img.size());
+
+  DBGM("loadCPUImageBuffers");
+  DBGM("Saved size (width x heigth): " << m_cpu_buf_size.width() << "x" << m_cpu_buf_size.height());
+  DBGM("Frame size (width x heigth): " << img_size.width() << "x" << img_size.height());
+  DBGM("QImage::Format_ARGB32 : " << QImage::Format_ARGB32);
+  DBGM("QImage::Format_RGB32  : " << QImage::Format_RGB32);
+  DBGM("img.format()          : " << img.format());
+
+  // allocate the input image
+  if ((img.format() != QImage::Format_ARGB32) && (img.format() != QImage::Format_RGB32))
+  {
+    INFOM("Converting CPU image format to ARGB32");
+    *src = img.convertToFormat(QImage::Format_ARGB32);
+    if (src->isNull())
+    {
+      ERRORM("Failed to convert source CPU image buffer");
+      return false;
+    }
+  }
+  else
+  {
+    INFOM("Using the CPU image format as is");
+    *src = img;
+  }
+
+  // allocate the output image
+  if (img_size != m_cpu_buf_size)
+  {
+    INFOM("Reallocating output CPU buffer");
+
+    *dst = QImage(img_size, QImage::Format_ARGB32);
+
+    // remember the image size for the next time
+    m_cpu_buf_size = img_size;
+  }
+
+  return true;
 }
 
 
 QImage FilterPipeline::run(const QImage & src)
 {
+  enum DeviceInUse {
+    NONE,
+    GPU,
+    CPU
+  } device = NONE;
+
   int w = src.width();
   int h = src.height();
-  QImage res(w, h, QImage::Format_ARGB32);
-
-  std::cerr << "QImage::Format_ARGB32 == " << QImage::Format_ARGB32 << std::endl;
-  std::cerr << "QImage::Format_RGB32 == " << QImage::Format_RGB32 << std::endl;
-
-  if ((src.format() != QImage::Format_ARGB32) && (src.format() != QImage::Format_RGB32))
-  {
-    std::cerr << "converting format from " << src.format() << std::endl;
-    if (!runFilters(src.convertToFormat(QImage::Format_ARGB32).constBits(),
-                    w, h, res.bits()))
-    {
-      return QImage();
-    }
-  }
-  else
-  {
-    std::cerr << "using img without conversion: " << src.format() << std::endl;
-    if (!runFilters(src.constBits(), w, h, res.bits()))
-    {
-      return QImage();
-    }
-  }
-
-  return res;
-}
-
-
-bool FilterPipeline::loadGPUImageBuffers(const unsigned char *pixels, int w, int h,
-                                         QCLImage2D *src, QCLImage2D *dst)
-{
-  if ((m_gpu_img_w != w) || (m_gpu_img_h != h))
-  {
-    QCLImageFormat fmt(QCLImageFormat::Order_BGRA, QCLImageFormat::Type_Normalized_UInt8);
-
-    // allocate the input image
-    *src = m_ctx->createImage2DCopy(fmt, pixels, QSize(w, h), QCLMemoryObject::ReadWrite);
-    if (src->isNull())
-    {
-      std::cerr << "Failed to allocate image on GPU: " << m_ctx->lastError() << std::endl;
-      return false;
-    }
-
-    // allocate the output image
-    *dst = m_ctx->createImage2DDevice(fmt, QSize(w, h), QCLMemoryObject::ReadWrite);
-    if (dst->isNull())
-    {
-      std::cerr << "Failed to allocate destination image on GPU: " << m_ctx->lastError() << std::endl;
-      return false;
-    }
-
-    // rember the image size for the next time
-    m_gpu_img_w = w;
-    m_gpu_img_h = h;
-  }
-  else
-  {
-    if (!src->write(pixels, QRect(0, 0, w, h), w * 4 * sizeof(unsigned char)))
-    {
-      std::cerr << "Failed to write image data to GPU buffer: " << m_ctx->lastError() << std::endl;
-      return false;
-    }
-  }
-
-  return true;
-}
-
-
-bool FilterPipeline::loadCPUImageBuffers(const unsigned char *pixels, int w, int h,
-                                         tPixelsPtr *src, tPixelsPtr *dst)
-{
-  if ((m_cpu_img_w != w) || (m_cpu_img_h != h))
-  {
-    // allocate the input image
-    src->reset(new unsigned char[w * h * 4]);
-    if (!src)
-    {
-      std::cerr << "Failed to allocate memory for image buffer on CPU" << std::endl;
-      return false;
-    }
-
-    // allocate the output image
-    dst->reset(new unsigned char[w * h * 4]);
-    if (!dst)
-    {
-      std::cerr << "Failed to allocate memory for destination image on CPU" << std::endl;
-      return false;
-    }
-
-    // remember the image size for the next time
-    m_cpu_img_w = w;
-    m_cpu_img_h = h;
-  }
-
-  std::memcpy(src->get(), pixels, w * h * 4 * sizeof(unsigned char));
-
-  return true;
-}
-
-
-bool FilterPipeline::runFilters(const unsigned char *src, int w, int h, unsigned char *dst)
-{
-  bool using_gpu = false;
 
   bool cpu_buf_loaded = false;  // whether the CPU buffer is allocated
   bool gpu_buf_loaded = false;  // whether the GPU buffer is allocated
@@ -188,303 +191,85 @@ bool FilterPipeline::runFilters(const unsigned char *src, int w, int h, unsigned
       // reallocate the storage on the GPU
       if (!gpu_buf_loaded)
       {
-        if (!loadGPUImageBuffers(src, w, h, m_gpu_img + gpu_src, m_gpu_img + gpu_dst))
+        if (!loadGPUImageBuffers(src, m_gpu_buf + gpu_src, m_gpu_buf + gpu_dst))
         {
-          std::cerr << "ERROR: Failed to allocate images on GPU" << std::endl;
-          return false;
+          ERRORM("Failed to allocate images on GPU");
+          return QImage();
         }
         gpu_buf_loaded = true;
       }
 
       // upload the data from cpu back to gpu
-      if (!using_gpu)
+      if (device == CPU)
       {
-        if (m_cpu_img[cpu_src].get() != nullptr)
+        // use gpu_src because gpu_dst has been swapped to gpu_src at the end of the last iteration
+        if (!m_gpu_buf[gpu_src].write(m_cpu_buf[cpu_src]))
         {
-          // use gpu_src because gpu_dst has been swapped to gpu_src at the end of the last iteration
-          if (!m_gpu_img[gpu_src].write(m_cpu_img[cpu_src].get(), QRect(0, 0, w, h), w * 4 * sizeof(unsigned char)))
-          {
-            std::cerr << "WARNING: Failed to write data back from GPU: " << m_ctx->lastError() << std::endl;
-          }
+          WARNM("Failed to write data back from GPU: " << m_ctx->lastError());
         }
       }
 
       // run the filter
-      if (!filter->runCL(m_gpu_img[gpu_src], w, h, m_gpu_img[gpu_dst]))
+      if (!filter->runCL(m_gpu_buf[gpu_src], w, h, m_gpu_buf[gpu_dst]))
       {
-        std::cerr << "WARNING: Failed to run the OpenCL version of the filter" << std::endl;
+        WARNM("Failed to run the OpenCL version of the filter");
       }
 
       // swap the source and the destination buffers
       gpu_dst = !gpu_dst;
       gpu_src = !gpu_src;
 
-      using_gpu = true;
+      device = GPU;
     }
     else
     {
       // reallocate the storage on the CPU
       if (!cpu_buf_loaded)
       {
-        if (!loadCPUImageBuffers(src, w, h, m_cpu_img + cpu_src, m_cpu_img + cpu_dst))
+        if (!loadCPUImageBuffers(src, m_cpu_buf + cpu_src, m_cpu_buf + cpu_dst))
         {
-          std::cerr << "ERROR: Failed to allocate images on CPU" << std::endl;
-          return false;
+          ERRORM("Failed to allocate images on CPU");
+          return QImage();
         }
         cpu_buf_loaded = true;
       }
 
       // download the data from gpu back to cpu
-      if (using_gpu)
+      if (device == GPU)
       {
-        //if (!m_gpu_img[gpu_src].isNull())
-        //{
-          // use gpu_src because gpu_dst has been swapped to gpu_src at the end of the last iteration
-          if (!m_gpu_img[gpu_src].read(m_cpu_img[cpu_src].get(), QRect(0, 0, w, h), w * 4 * sizeof(unsigned char)))
-          {
-            std::cerr << "WARNING: Failed to read data back from GPU: " << m_ctx->lastError() << std::endl;
-          }
-        //}
+        // use gpu_src because gpu_dst has been swapped to gpu_src at the end of the last iteration
+        if (!m_gpu_buf[gpu_src].read(m_cpu_buf + cpu_src))
+        {
+          WARNM("Failed to read data back from GPU: " << m_ctx->lastError());
+        }
       }
 
       // run the filter
-      if (!filter->run(m_cpu_img[cpu_src].get(), w, h, m_cpu_img[cpu_dst].get()))
+      if (!filter->run(m_cpu_buf[cpu_src].constBits(), w, h, m_cpu_buf[cpu_dst].bits()))
       {
-        std::cerr << "WARNING: Failed to run the CPU version of the filter" << std::endl;
+        WARNM("Failed to run the CPU version of the filter");
       }
 
       // swap the source and the destination buffers
       cpu_dst = !cpu_dst;
       cpu_src = !cpu_src;
 
-      using_gpu = false;
+      device = CPU;
     }
   }
 
-  if (using_gpu)
+  if (device == GPU)
   {
-    if (m_gpu_img[gpu_src].isNull()) return true;
-
-    // use gpu_src because gpu_dst has been swapped to gpu_src at the end of the last iteration
-    if (!m_gpu_img[gpu_src].read(dst, QRect(0, 0, w, h), w * 4 * sizeof(unsigned char)))
-    {
-      std::cerr << "Failed to read data back from GPU: " << m_ctx->lastError() << std::endl;
-      return false;
-    }
+    return m_gpu_buf[gpu_src].toQImage(false);
+  }
+  else if (device == CPU)
+  {
+    return m_cpu_buf[cpu_src];
   }
   else
   {
-    unsigned char *p = m_cpu_img[cpu_src].get();
-    if (p == nullptr) return true;
-    // these copying could yet be optimized out
-    std::memcpy(dst, p, w * h * 4 * sizeof(unsigned char));
+    std::cerr << "WARNING: There are no filters in the pipeline" << std::endl;
   }
 
-  return true;
+  return QImage();
 }
-
-
-
-
-
-
-
-#if 0
-bool FilterPipeline::runFilters(const unsigned char *src, int w, int h, unsigned char *dst)
-{
-#if 0
-  int gpu_img_src = 0;
-  int gpu_img_dst = 1;
-  bool gpu_img_allocated = false;
-
-  for (unsigned int i = 0; i < m_filter_list.size(); ++i)
-  {
-    Filter *filter = m_filter_list[i].get();
-
-    if (filter->hasOpenCL())
-    {
-      // reallocate the storage on the GPU
-      if (!gpu_img_allocated)
-      {
-        if (!loadGPUImageBuffers(pixels, w, h, m_gpu_img + gpu_img_src, m_gpu_img + gpu_img_dst))
-        {
-          std::cerr << "ERROR: Failed to allocate images on GPU" << std::endl;
-          return QImage();
-        }
-        gpu_img_allocated = true;
-      }
-
-      // run the filter
-      if (!filter->runCL(m_gpu_img[gpu_img_src], w, h, m_gpu_img[gpu_img_dst]))
-      {
-        std::cerr << "WARNING: Failed to run the OpenCL version of the filter" << std::endl;
-      }
-
-      // swap the source and the destination buffers
-      gpu_img_dst = !gpu_img_dst;
-      gpu_img_src = !gpu_img_src;
-    }
-  }
-
-  return m_gpu_img[gpu_img_src].toQImage(false);
-#elif 1
-  bool using_gpu = false;
-
-  bool cpu_buf_loaded = false;  // whether the CPU buffer is allocated
-  bool gpu_buf_loaded = false;  // whether the GPU buffer is allocated
-
-  int gpu_src = 0;  // which GPU buffer plays the source role
-  int gpu_dst = 1;  // which GPU buffer plays the destination role
-
-  int cpu_src = 0;  // which CPU buffer plays the source role
-  int cpu_dst = 1;  // which CPU buffer plays the destination role
-
-  for (unsigned int i = 0; i < m_filter_list.size(); ++i)
-  {
-    Filter *filter = m_filter_list[i].get();
-
-    if (filter->hasOpenCL())
-    {
-      // reallocate the storage on the GPU
-      if (!gpu_buf_loaded)
-      {
-        if (!loadGPUImageBuffers(src, w, h, m_gpu_img + gpu_src, m_gpu_img + gpu_dst))
-        {
-          std::cerr << "ERROR: Failed to allocate images on GPU" << std::endl;
-          return false;
-        }
-        gpu_buf_loaded = true;
-      }
-
-      // run the filter
-      if (!filter->runCL(m_gpu_img[gpu_src], w, h, m_gpu_img[gpu_dst]))
-      {
-        std::cerr << "WARNING: Failed to run the OpenCL version of the filter" << std::endl;
-      }
-
-      // swap the source and the destination buffers
-      gpu_dst = !gpu_dst;
-      gpu_src = !gpu_src;
-
-      using_gpu = true;
-    }
-    else
-    {
-      // reallocate the storage on the CPU
-      if (!cpu_buf_loaded)
-      {
-        if (!loadCPUImageBuffers(src, w, h, m_cpu_img + cpu_src, m_cpu_img + cpu_dst))
-        {
-          std::cerr << "ERROR: Failed to allocate images on CPU" << std::endl;
-          return false;
-        }
-        cpu_buf_loaded = true;
-      }
-
-      // run the filter
-      if (!filter->run(m_cpu_img[cpu_src].get(), w, h, m_cpu_img[cpu_dst].get()))
-      {
-        std::cerr << "WARNING: Failed to run the CPU version of the filter" << std::endl;
-      }
-
-      // swap the source and the destination buffers
-      cpu_dst = !cpu_dst;
-      cpu_src = !cpu_src;
-
-      using_gpu = false;
-    }
-  }
-
-  if (using_gpu)
-  {
-    // use gpu_src because gpu_dst has been swapped to gpu_src at the end of the last iteration
-    if (!m_gpu_img[gpu_src].read(dst, QRect(0, 0, w, h), w * h * 4 * sizeof(unsigned char)))
-    {
-      std::cerr << "Failed to read data back from GPU: " << m_ctx->lastError() << std::endl;
-      return false;
-    }
-  }
-  else
-  {
-    // these copying could yet be optimized out
-    std::memcpy(dst, m_cpu_img[cpu_src].get(), w * h * 4 * sizeof(unsigned char));
-  }
-
-  return true;
-#elif 0
-  QImage tmp;
-  QImage result;
-
-  int gpu_result = true;   // whether the result is a buffer on GPU or in a buffer on CPU
-
-  int gpu_img_src = 0;
-  int gpu_img_dst = 1;
-  bool gpu_img_allocated = false;
-
-  const unsigned char *cpu_img_src = pixels;
-  const unsigned char *cpu_img_dst = nullptr;
-  bool cpu_img_allocated = false;
-
-  for (unsigned int i = 0; i < m_filter_list.size(); ++i)
-  {
-    Filter *filter = m_filter_list[i].get();
-
-    if (filter->hasOpenCL())
-    {
-      // reallocate the storage on the GPU
-      if (!gpu_img_allocated)
-      {
-        if (!loadGPUImageBuffers(pixels, w, h, m_gpu_img + gpu_img_src, m_gpu_img + gpu_img_dst))
-        {
-          std::cerr << "ERROR: Failed to allocate images on GPU" << std::endl;
-          return QImage();
-        }
-        gpu_img_allocated = true;
-      }
-
-      // run the filter
-      if (!filter->runCL(m_gpu_img[gpu_img_src], w, h, m_gpu_img[gpu_img_dst]))
-      {
-        std::cerr << "WARNING: Failed to run the OpenCL version of the filter" << std::endl;
-      }
-
-      // swap the source and the destination buffers
-      gpu_img_dst = !gpu_img_dst;
-      gpu_img_src = !gpu_img_src;
-
-      gpu_result = true;
-    }
-    else
-    {
-      // reallocate the storage on the CPU
-      if (!cpu_img_allocated)
-      {
-        result = QImage(w, h, QImage::Format_ARGB32);
-        tmp = QImage(w, h, QImage::Format_ARGB32);
-        if ((result.isNull()) || (tmp.isNull()))
-        {
-          std::cerr << "ERROR: Failed to allocate buffers on CPU" << std::endl;
-          return QImage();
-        }
-        cpu_img_dst = result;
-        cpu_img_allocated = true;
-      }
-
-      gpu_result = false;
-    }
-  }
-
-  if (gpu_result)
-  {
-    if (!cpu_img_allocated)
-    {
-      result = QImage(w, h, QImage::Format_ARGB32);
-    }
-
-    m_gpu_img[gpu_img_dst].read(&result, QRect(0, 0, w, h));
-  }
-
-  return result;
-#endif
-}
-#endif

@@ -8,7 +8,7 @@ class GrayScaleFilter : public PointFilter
 {
   public:
     explicit GrayScaleFilter(QCLContext *ctx)
-      : PointFilter(ctx, "clkernels/grayscale.cl", "grayscale")
+      : PointFilter(ctx, "src/clkernels/grayscale.cl", "grayscale")
     { }
 
     virtual bool run(const unsigned char *src, int w, int h, unsigned char *dst) override;
