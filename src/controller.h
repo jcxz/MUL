@@ -8,7 +8,6 @@
 #include <opencv2/opencv.hpp>
 #include "player.h"
 #include "mattoqimage.h"
-#include "FilterGray.h"
 //#include "filterhistogrameq.h"
 #include "converter.h"
 #include "FilterPipeline.h"
@@ -63,6 +62,8 @@ private:
 
 
     FilterPipeline *pipeline;
+    //stores names of selected filters and pointers to them
+    std::vector<std::pair<std::string, Filter*> > filterVec;
 
 
 public:
@@ -124,6 +125,9 @@ public:
     void stopConvertToFile();
     void renderQFrame(const QImage &frame);
     void setCLContext(QCLContext *ctx);
+    void addFilter(std::string fltName);
+    std::vector<std::pair<std::string, Filter *> > getActiveFilters();
+    void removeFilter(int index);
 signals:
 
 public slots:
