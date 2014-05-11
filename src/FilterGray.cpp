@@ -1,6 +1,6 @@
 #include "FilterGray.h"
 
-#include <opencv2/core/core.hpp>
+
 
 
 

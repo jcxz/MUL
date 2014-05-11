@@ -2,9 +2,11 @@
 #define FILTER_H
 
 #include <stdexcept>
+#include <string>
 
 
-namespace cv { class Mat; }
+class QCLContext;
+class QCLImage2D;
 
 
 /**
@@ -12,6 +14,14 @@ namespace cv { class Mat; }
  */
 class FilterException : public std::runtime_error
 {
+  public:
+    explicit FilterException(const char *msg = "")
+      : std::runtime_error(msg)
+    { }
+
+    explicit FilterException(std::string msg)
+      : std::runtime_error(msg)
+    { }
 };
 
 
@@ -21,30 +31,63 @@ class FilterException : public std::runtime_error
 class Filter
 {
   public:
-    //explicit Filter(CLContext *ctx);
+    /**
+     * @brief Filter constructor
+     * @param ctx a pointer to the OpenCL context.
+     * In case OpenCL is not supported by your filter
+     * pass nullptr to this argument.
+     */
+    explicit Filter(QCLContext *ctx) : m_ctx(ctx), m_good(false) { }
 
     /**
      * @brief ~Filter destructor
      */
     virtual ~Filter(void) { }
 
-    /**
-     * @brief init all additional one time initializations should
-     * be implemented in this function, which shall in turn be called
-     * once before the filter is used.
-     * @return true on success, false on error
-     */
-    virtual bool init(void) = 0;
+    QCLContext *clContext(void) const { return m_ctx; }
+    void setCLContext(QCLContext *ctx) { m_ctx = ctx; }
 
     /**
-     * @brief exec filters the specified image
-     * @param image the image to be filtered (servers as input as well as output)
+     * @brief hasOpenCL this function can be used to query
+     * the filter for OpenCL support
+     * @return true in case OpenCL is supported, false otherwise
+     */
+    bool hasOpenCL(void) const { return m_ctx != nullptr; }
+
+    /**
+     * @brief isGood determines whether initialization succeeded
+     * @return true in case the Filter is usable, false otherwise
+     */
+    bool isGood(void) const { return m_good; }
+
+    /**
+     * @brief operator bool determines whether the filter is usable
+     */
+    operator bool(void) const { return m_good; }
+
+    /**
+     * @brief run runs the filter on specified image
+     * @param src the array of pixels of input image,
+     * the pixel channels are given in bgra order
+     * @param w width of the input image
+     * @param h heigth of the input image
+     * @param dst the array of pixels of output image,
+     * the output pixels must be in bgra order
      * @return true on success, false otherwise
      */
-    virtual bool exec(cv::Mat & image) = 0;
+    virtual bool run(const unsigned char *src, int w, int h, unsigned char *dst) = 0;
 
-  private:
-    //CLContext *m_ctx; // OpenCL context
+    /**
+     * @brief runCL runs the OpenCL version of filter on the specified image
+     * @param src the image to be filtered
+     * @param dst the resulting image
+     * @return true on success, false otherwise
+     */
+    virtual bool runCL(const QCLImage2D & src, int w, int h, QCLImage2D & dst) = 0;
+
+  protected:
+    QCLContext *m_ctx; // OpenCL context
+    bool m_good;       // determines whether the initialization failed or not
 };
 
 #endif

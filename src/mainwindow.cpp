@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Controller::instantiate();
     //set up displaying window
     Controller::ctrlInst()->setMainWindow(this);
+    //initialise vital
 
     ui->statusBar->addWidget(ui->lblStatusBar);
     ui->lblStatusBar->setText("");
@@ -20,6 +21,10 @@ MainWindow::~MainWindow()
 {
     Controller::destroy();
     delete ui;
+}
+
+void MainWindow::setCLContext(QCLContext *ctx) {
+    Controller::ctrlInst()->setCLContext(ctx);
 }
 
 void MainWindow::on_btnPlay_clicked()

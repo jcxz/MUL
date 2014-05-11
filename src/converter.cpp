@@ -73,8 +73,9 @@ void Converter::run()
             continue;
         }
 
-        if(filter)
-            filter->exec(frame);
+        //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//        if(filter)
+//            filter->exec(frame);
 
         out.write(frame);
 

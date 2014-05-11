@@ -8,6 +8,13 @@ Controller::Controller()
 {
 }
 
+void Controller::setCLContext(QCLContext *ctx) {
+    // setup filter pipeline
+    pipeline = new FilterPipeline(ctx);
+    //pass pipeline to player
+    player.setFilterPipeline(pipeline);
+}
+
 void Controller::setMainWindow(MainWindow *ptr) {
     mainWin = ptr;
 
@@ -20,6 +27,7 @@ void Controller::setMainWindow(MainWindow *ptr) {
 
 Controller::~Controller()
 {
+    delete pipeline;
     stop(); //stop video playing thread
     //stop conversion thread
     converter.stop();
@@ -28,6 +36,11 @@ Controller::~Controller()
 void Controller::renderFrame(const cv::Mat &frame)
 {
     mainWin->ui->widget->renderPixmap(QPixmap::fromImage(matToQimg.convert(frame)));
+}
+
+void Controller::renderQFrame(const QImage &frame)
+{
+    mainWin->ui->widget->renderPixmap(QPixmap::fromImage(frame));
 }
 
 void Controller::play() {
@@ -82,10 +95,11 @@ void Controller::selectFilter(filterT flt)
         player.setFilter(NULL);
         break;
     case GRAY_FLT:
-        player.setFilter(new FilterGray());
+        //player.setFilter(new FilterGray());
+        pipeline->addFilter("grayscale");
         break;
     case HIST_FLT:
-        player.setFilter(new FilterHistogramEq());
+        //player.setFilter(new FilterHistogramEq());
         break;
     default:
         player.setFilter(NULL);

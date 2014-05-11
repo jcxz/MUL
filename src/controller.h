@@ -9,8 +9,10 @@
 #include "player.h"
 #include "mattoqimage.h"
 #include "FilterGray.h"
-#include "filterhistogrameq.h"
+//#include "filterhistogrameq.h"
 #include "converter.h"
+#include "FilterPipeline.h"
+#include "opencl/qclcontext.h"
 
 #include <QtConcurrent/QtConcurrent>
 
@@ -58,6 +60,9 @@ private:
     MatToQimage matToQimg;
     Player player;
     Converter converter;
+
+
+    FilterPipeline *pipeline;
 
 
 public:
@@ -117,6 +122,8 @@ public:
     void controlsEnabled(bool value);
     void convertFinished(bool result);
     void stopConvertToFile();
+    void renderQFrame(const QImage &frame);
+    void setCLContext(QCLContext *ctx);
 signals:
 
 public slots:

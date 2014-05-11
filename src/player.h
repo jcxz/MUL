@@ -10,6 +10,9 @@
 #include "mattoqimage.h"
 #include "Filter.h"
 #include "glrenderer.h"
+#include "mattoqimage.h"
+
+#include "FilterPipeline.h"
 
 /*!
  \brief Player class
@@ -33,6 +36,9 @@ private:
 
     GLRenderer renderer;
 
+    FilterPipeline *pipeline = NULL;
+    MatToQimage matToQimg;
+
 protected:
     /*!
      \brief Thread main function
@@ -49,6 +55,10 @@ public:
     void play();
     void stop();
     void pause();
+
+    void setFilterPipeline(FilterPipeline *fltPipeline) {
+        pipeline = fltPipeline;
+    }
 
 
     void setFilter(Filter *flt) {

@@ -4,6 +4,7 @@
 void Player::run()
 {
     double duration; //for time measurment
+    QImage outQFrame, inQFrame;
 
     for(;;) {
         //time measurment
@@ -19,13 +20,20 @@ void Player::run()
             break;
         }
 
+        inQFrame = matToQimg.convert(frame);
+
         //if any filter is selected, use it
         filterMutex.lock();
-            if(filter)
-                filter->exec(frame);
+//            if(filter)
+//                filter->exec(frame);
+            if(!pipeline->isEmpty())
+                outQFrame = pipeline->run(inQFrame);
+            else
+               outQFrame = inQFrame;
         filterMutex.unlock();
 
-        Controller::ctrlInst()->renderFrame(frame);
+        //Controller::ctrlInst()->renderFrame(frame);
+        Controller::ctrlInst()->renderQFrame(outQFrame);
         //msleep(playSpeed);
 
         //time measurment

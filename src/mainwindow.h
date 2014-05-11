@@ -18,6 +18,7 @@ public:
     ~MainWindow();
     Ui::MainWindow *ui;
 
+    void setCLContext(QCLContext *ctx);
 private slots:
     void on_btnPlay_clicked();
 
