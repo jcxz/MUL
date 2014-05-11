@@ -24,10 +24,14 @@ DEFINES += "CLSOURCEPATH=\"$${CL_KERNELS_DIR}\""
     DEFINES += QT_OPENCL_1_1
 #}
 
+INCLUDEPATH += src
+INCLUDEPATH += src/opencl
+INCLUDEPATH += src/openclgl
+INCLUDEPATH += src/filters
+
+
 mac {
     LIBS += -framework OpenCL
-    INCLUDEPATH += ./opencl
-    INCLUDEPATH += ./openclgl
 
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
     INCLUDEPATH += /opt/local/include
@@ -42,10 +46,10 @@ win32 {
     LIBS += -lopencv_imgproc248.dll
 
     INCLUDEPATH += "C:/Program Files (x86)/AMD APP/include"
-    INCLUDEPATH += ./opencl
-    INCLUDEPATH += ./openclgl
     LIBS += -L"C:/Program Files (x86)/AMD APP/lib/x86"
     LIBS += -lOpenCL
+
+    DEFINES += UTEST
 }
 
 #Specify build folder
@@ -89,14 +93,14 @@ HEADERS += \
     src/openclgl/qcl_gl_p.h \
     \
     src/debug.h \
-    src/FilterPipeline.h \
-    src/Filter.h \
-    src/PointFilter.h \
-    src/ColorInvertFilter.h \
-    src/SepiaFilter.h \
-    src/GrayScaleFilter.h \
-    src/TransformFilter.h \
-    src/ConvolutionFilter.h \
+    src/filters/FilterPipeline.h \
+    src/filters/Filter.h \
+    src/filters/PointFilter.h \
+    src/filters/ColorInvertFilter.h \
+    src/filters/SepiaFilter.h \
+    src/filters/GrayScaleFilter.h \
+    src/filters/TransformFilter.h \
+    src/filters/ConvolutionFilter.h \
     \
     src/mainwindow.h \
     src/mattoqimage.h \
@@ -125,11 +129,11 @@ SOURCES += \
     src/openclgl/qclcontextgl.cpp \
     \
     src/main.cpp \
-    src/FilterPipeline.cpp \
-    src/PointFilter.cpp \
-    src/GrayScaleFilter.cpp \
-    src/TransformFilter.cpp \
-    src/ConvolutionFilter.cpp \
+    src/filters/FilterPipeline.cpp \
+    src/filters/PointFilter.cpp \
+    src/filters/GrayScaleFilter.cpp \
+    src/filters/TransformFilter.cpp \
+    src/filters/ConvolutionFilter.cpp \
     \
     src/mainwindow.cpp \
     src/mattoqimage.cpp \
