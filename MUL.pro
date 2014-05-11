@@ -52,54 +52,9 @@ win32 {
     DEFINES += UTEST
 }
 
-#Specify build folder
-#release: DESTDIR = build/release
-#debug:   DESTDIR = build/debug
 
-#OBJECTS_DIR = $$DESTDIR/obj
-#MOC_DIR = $$DESTDIR/moc
-#RCC_DIR = $$DESTDIR/qrc
-#UI_DIR = $$DESTDIR/ui
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-SOURCES += src/main.cpp \
-    src/mainwindow.cpp \
-    src/mattoqimage.cpp \
-    src/controller.cpp \
-    src/player.cpp \
-    src/FilterGray.cpp \
-    src/converter.cpp \
-    src/glrenderer.cpp \
-    src/FilterPipeline.cpp \
-    src/GrayScaleFilter.cpp \
-    src/PointFilter.cpp \
-    src/TransformFilter.cpp \
-    src/opencl/qclbuffer.cpp \
-    src/opencl/qclcommandqueue.cpp \
-    src/opencl/qclcontext.cpp \
-    src/opencl/qcldevice.cpp \
-    src/opencl/qclevent.cpp \
-    src/opencl/qclimage.cpp \
-    src/opencl/qclimageformat.cpp \
-    src/opencl/qclkernel.cpp \
-    src/opencl/qclmemoryobject.cpp \
-    src/opencl/qclplatform.cpp \
-    src/opencl/qclprogram.cpp \
-    src/opencl/qclsampler.cpp \
-    src/opencl/qcluserevent.cpp \
-    src/opencl/qclvector.cpp \
-    src/opencl/qclworksize.cpp \
-    src/openclgl/qclcontextgl.cpp \
-    src/addfilterdialog.cpp
-=======
 release: BUILD_DIR = build/release
 debug:   BUILD_DIR = build/debug
->>>>>>> FETCH_HEAD
-=======
-release: BUILD_DIR = build/release
-debug:   BUILD_DIR = build/debug
->>>>>>> FETCH_HEAD
 
 OBJECTS_DIR = $$BUILD_DIR/obj
 MOC_DIR = $$BUILD_DIR/moc
@@ -127,14 +82,7 @@ HEADERS += \
     src/opencl/qclext_p.h \
     \
     src/openclgl/qclcontextgl.h \
-    src/openclgl/qcl_gl_p.h \
-<<<<<<< HEAD
-<<<<<<< HEAD
-    src/openclgl/qclcontextgl.h \
-    src/addfilterdialog.h
-=======
-=======
->>>>>>> FETCH_HEAD
+    src/openclgl/qcl_gl_p.h \    
     \
     src/debug.h \
     src/filters/FilterPipeline.h \
@@ -151,7 +99,8 @@ HEADERS += \
     src/controller.h \
     src/player.h \
     src/converter.h \
-    src/glrenderer.h
+    src/glrenderer.h \
+    src/addfilterdialog.h
 
 SOURCES += \
     src/opencl/qclbuffer.cpp \
@@ -184,11 +133,8 @@ SOURCES += \
     src/controller.cpp \
     src/player.cpp \
     src/converter.cpp \
-    src/glrenderer.cpp
-<<<<<<< HEAD
->>>>>>> FETCH_HEAD
-=======
->>>>>>> FETCH_HEAD
+    src/glrenderer.cpp \
+    src/addfilterdialog.cpp
 
 FORMS += src/mainwindow.ui \
     src/addfilterdialog.ui
