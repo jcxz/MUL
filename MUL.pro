@@ -96,6 +96,7 @@ HEADERS += \
     src/filters/Conv2DFilter.h \
     src/filters/SeparableConv2DFilter.h \
     src/filters/SobelFilter.h \
+    src/filters/EmbossFilter.h \
     \
     src/mainwindow.h \
     src/mattoqimage.h \
@@ -133,6 +134,7 @@ SOURCES += \
     src/filters/Conv2DFilter.cpp \
     src/filters/SeparableConv2DFilter.cpp \
     src/filters/SobelFilter.cpp \
+    src/filters/EmbossFilter.cpp \
     \
     src/mainwindow.cpp \
     src/mattoqimage.cpp \

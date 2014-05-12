@@ -26,6 +26,9 @@ bool Conv2DFilter::init(QCLSampler::AddressingMode mode)
     return false;
   }
 
+  // set default bias value
+  m_kernel.setArg(BIAS_IDX, QVector4D(0.0f, 0.0f, 0.0f, 0.0f));
+
   return (m_good = setClampMode(mode));
 }
 

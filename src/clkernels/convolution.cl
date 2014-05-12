@@ -17,7 +17,8 @@ __kernel void conv2D(__read_only image2d_t src,
                      sampler_t sampler,
                      __constant float *filter,
                      const int filter_size,
-                     const int filter_size_half)
+                     const int filter_size_half,
+                     float4 bias)
 {  
   int2 coords = (int2) (get_global_id(0) + filter_size_half,
                         get_global_id(1) + filter_size_half);
@@ -28,13 +29,19 @@ __kernel void conv2D(__read_only image2d_t src,
     for (int j = 0; j < filter_size; ++j)
     {
       float4 color = read_imagef(src, sampler, coords - (int2) (i, j));
-      //float f = FILTER(i, j);
       sum += color * FILTER(i, j);
-      //sum += color * ((float4) (f));    
+      //sum = fabs(sum + color * FILTER(i, j));  
     }
   }
   
-  write_imagef(dst, coords, (float4) (sum.xyz, 1.0f));
+  sum = clamp(sum + bias, 0.0f, 1.0f);
+  //sum = min(fabs(sum + bias), 1.0f);
+  //sum = min(sum + bias, 1.0f);
+  sum.w = 1.0f;
+  
+  write_imagef(dst, coords, sum);
+  
+  //write_imagef(dst, coords, (float4) (sum.xyz, 1.0f));
 }
 
 
@@ -45,7 +52,8 @@ __kernel void conv2D_horizontal(__read_only image2d_t src,
                                 sampler_t sampler,
                                 __constant float *filter,
                                 const int filter_size,
-                                const int filter_size_half)
+                                const int filter_size_half,
+                                float4 bias)
 {
   int2 coords = (int2) (get_global_id(0) + filter_size_half, get_global_id(1));
   float4 sum = (float4) (0.0f, 0.0f, 0.0f, 0.0f);
@@ -56,7 +64,12 @@ __kernel void conv2D_horizontal(__read_only image2d_t src,
     sum += color * filter[i];   
   }
   
-  write_imagef(dst, coords, (float4) (sum.xyz, 1.0f));
+  sum = clamp(sum + bias, 0.0f, 1.0f);
+  sum.w = 1.0f;
+  
+  write_imagef(dst, coords, sum);
+  
+  //write_imagef(dst, coords, (float4) (sum.xyz, 1.0f));
 }
 
 
@@ -68,7 +81,8 @@ __kernel void conv2D_vertical(__read_only image2d_t src,
                               sampler_t sampler,
                               __constant float *filter,
                               const int filter_size,
-                              const int filter_size_half)
+                              const int filter_size_half,
+                              float4 bias)
 {
   // TODO: try to optimize this, maybe by transposing the input image
   int2 coords = (int2) (get_global_id(0), get_global_id(1) + filter_size_half);
@@ -80,5 +94,10 @@ __kernel void conv2D_vertical(__read_only image2d_t src,
     sum += color * filter[i];   
   }
   
-  write_imagef(dst, coords, (float4) (sum.xyz, 1.0f));
+  sum = clamp(sum + bias, 0.0f, 1.0f);
+  sum.w = 1.0f;
+  
+  write_imagef(dst, coords, sum);
+  
+  //write_imagef(dst, coords, (float4) (sum.xyz, 1.0f));
 }

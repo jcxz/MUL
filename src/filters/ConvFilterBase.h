@@ -17,6 +17,7 @@ class ConvFilterBase : public Filter
     static constexpr int FILTER_IDX = 3;
     static constexpr int FILTER_SIZE_IDX = 4;
     static constexpr int FILTER_SIZE_HALF_IDX = 5;
+    static constexpr int BIAS_IDX = 6;
 
     static constexpr int INVALID_FILTER_SIZE = -1;
 

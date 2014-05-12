@@ -13,6 +13,8 @@
 
 #define IN_FRAME1 "data/lena.png"
 #define OUT_FRAME1 "bordel/frame1.png"
+//#define IN_FRAME1 "D:/AC601/obrazky/testovacie/dog.jpg"
+//#define OUT_FRAME1 "bordel/dog.jpg"
 
 #define IN_FRAME2 "data/kvecina.jpg"
 #define OUT_FRAME2 "bordel/frame2.jpg"
@@ -69,6 +71,14 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
   float kern_2d[] = { 1.0f / 16.0f, 1.0f / 8.0f, 1.0f / 16.0f,
                       1.0f / 8.0f,  1.0f / 4.0f, 1.0f / 8.0f,
                       1.0f / 16.0f, 1.0f / 8.0f, 1.0f / 16.0f };
+  //float kern_2d[] = { -1.0f, 0.0f, 1.0f,
+  //                    -1.0f, 0.0f, 1.0f,
+  //                    -1.0f, 0.0f, 1.0f };
+  //static float kern_2d[] = {  1.0f,  1.0f,  1.0f,  1.0f,  0.0f,
+  //                            1.0f,  1.0f,  1.0f,  0.0f, -1.0f,
+  //                            1.0f,  1.0f,  0.0f, -1.0f, -1.0f,
+  //                            1.0f,  0.0f, -1.0f, -1.0f, -1.0f,
+  //                            0.0f, -1.0f, -1.0f, -1.0f, -1.0f };
   conv2d_f->setFilterKernel(kern_2d, 3);
 #endif
 
@@ -76,12 +86,19 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
   SeparableConv2DFilter *conv2d_sep_f = static_cast<SeparableConv2DFilter *>(pipeline.addFilter2("separableconv2d"));
   if (conv2d_sep_f == nullptr) return false;
   //float kern_2d_sep[] = { -1.0f, 0.0f, 1.0f };
+
   float kern_2d_sep[] = { 1.0f / 4.0f,  1.0f / 2.0f, 1.0f / 4.0f };
   conv2d_sep_f->setVerticalFilterKernel(kern_2d_sep, 3);
   conv2d_sep_f->setHorizontalFilterKernel(kern_2d_sep, 3);
+
+  //float kern_2d_sep[] = { 1.0f / 8.0f, 1.0f / 2.0f,  1.0f / 4.0f, 1.0f / 2.0f, 1.0f / 8.0f };
+  //conv2d_sep_f->setVerticalFilterKernel(kern_2d_sep, 5);
+  //conv2d_sep_f->setHorizontalFilterKernel(kern_2d_sep, 5);
 #endif
 
-  pipeline.addFilter("sobel");
+  pipeline.addFilter("emboss");
+
+  //pipeline.addFilter("sobel");
 
   //TransformFilter *filter = static_cast<TransformFilter *>(pipeline.addFilter2("transform"));
   //filter->setMatrix(1.0f, 0.0f, -100.0f, 0.0f, 1.0f, -100.0f);

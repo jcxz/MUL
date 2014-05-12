@@ -30,6 +30,13 @@ class SeparableConv2DFilter : public ConvFilterBase
 
     virtual bool runCL(const QCLImage2D & src, int w, int h, QCLImage2D & dst) override;
 
+    void setBias(float bias)
+    {
+      QVector4D v(bias, bias, bias, bias);
+      m_kernel_horz.setArg(BIAS_IDX, v);
+      m_kernel_vert.setArg(BIAS_IDX, v);
+    }
+
     bool setClampMode(QCLSampler::AddressingMode mode);
 
     /**

@@ -6,6 +6,7 @@
 #include "SobelFilter.h"
 #include "Conv2DFilter.h"
 #include "SeparableConv2DFilter.h"
+#include "EmbossFilter.h"
 #include "opencl/qclcontext.h"
 #include "debug.h"
 
@@ -45,6 +46,10 @@ Filter* FilterPipeline::createFilter(const char *name) const
   else if (strcmp(name, "sobel") == 0)
   {
     filter = new SobelFilter(m_ctx);
+  }
+  else if (strcmp(name, "emboss") == 0)
+  {
+    filter = new EmbossFilter(m_ctx);
   }
   else
   {

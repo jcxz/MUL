@@ -74,20 +74,24 @@ bool SobelFilter::runCL(const QCLImage2D & src, int w, int h, QCLImage2D & dst)
     m_tmp_buf_h = h;
   }
 
-  QCLEventList evt_list;
+  // event list by tu nemal byt potrebny pretoze fronta prikazov NIE je out of order
+  //QCLEventList evt_list;
 
   m_kernel_x.setArg(0, src);
   m_kernel_x.setArg(1, m_tmp_buf_x);
-  evt_list.append(m_kernel_x.run());
+  m_kernel_x.run();
+  //evt_list.append(m_kernel_x.run());
 
   m_kernel_y.setArg(0, src);
   m_kernel_y.setArg(1, m_tmp_buf_y);
-  evt_list.append(m_kernel_y.run());
+  m_kernel_y.run();
+  //evt_list.append(m_kernel_y.run());
 
   m_kernel_combine.setArg(0, m_tmp_buf_x);
   m_kernel_combine.setArg(1, m_tmp_buf_y);
   m_kernel_combine.setArg(2, dst);
-  m_kernel_combine.run(evt_list);
+  m_kernel_combine.run();
+  //m_kernel_combine.run(evt_list);
 
   return true;
 }

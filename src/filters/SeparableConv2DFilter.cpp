@@ -33,6 +33,10 @@ bool SeparableConv2DFilter::init(QCLSampler::AddressingMode mode)
     return false;
   }
 
+  // set default bias value
+  m_kernel_horz.setArg(BIAS_IDX, QVector4D(0.0f, 0.0f, 0.0f, 0.0f));
+  m_kernel_vert.setArg(BIAS_IDX, QVector4D(0.0f, 0.0f, 0.0f, 0.0f));
+
   return (m_good = setClampMode(mode));
 }
 
@@ -67,21 +71,25 @@ bool SeparableConv2DFilter::runCL(const QCLImage2D & src, int w, int h, QCLImage
       ERRORM("Failed to create temporary buffer for separable convolution: " << m_ctx->lastError());
       return false;
     }
+
+    m_kernel_horz.setGlobalWorkSize(w, h);
+    m_kernel_vert.setGlobalWorkSize(w, h);
+
     m_tmp_buf_w = w;
     m_tmp_buf_h = h;
   }
 
+  //QCLEventList evt_list;
+
   m_kernel_horz.setArg(SRC_IDX, src);
   m_kernel_horz.setArg(DST_IDX, m_tmp_buf);
-  m_kernel_horz.setGlobalWorkSize(w, h);
-  QCLEvent evt(m_kernel_horz.run());
-
-  evt.waitForFinished();
+  m_kernel_horz.run();
+  //evt_list.append(m_kernel_horz.run());
 
   m_kernel_vert.setArg(SRC_IDX, m_tmp_buf);
   m_kernel_vert.setArg(DST_IDX, dst);
-  m_kernel_vert.setGlobalWorkSize(w, h);
   m_kernel_vert.run();
+  //m_kernel_vert.run(evt_list);
 
   return true;
 }

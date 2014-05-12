@@ -24,6 +24,9 @@ class Conv2DFilter : public ConvFilterBase
 
     virtual bool runCL(const QCLImage2D & src, int w, int h, QCLImage2D & dst) override;
 
+    void setBias(float bias)
+    { m_kernel.setArg(BIAS_IDX, QVector4D(bias, bias, bias, bias)); }
+
     bool setClampMode(QCLSampler::AddressingMode mode);
 
     /**
