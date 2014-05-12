@@ -144,6 +144,7 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
             pause();
         }
 
+        try {
         if (fltName == "grayscale")
         {
           name = "Grayscale";
@@ -160,38 +161,49 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
         {
           name = "Transformation";
           //set arguments
+          std::string::size_type sz;
           TransformFilter *filter = dynamic_cast<TransformFilter*>(flt);
           float m[args.size()];
           for(int i = 0; i < args.size(); i++) {
               if(!args[i].empty())
-                m[i] = stof(args[i]);
+                m[i] = stof(args[i], &sz);
               else m[i] = 0;
           }
           filter->setMatrix(m);
+          //DEBUG
+          for(int i = 0; i < args.size(); i++) {
+              std::cout << m[i] << std::endl;
+          }
         }
         else if (fltName == "conv2d")
         {
             name = "Convolution 2D";
             //set arguments
             //stored row by row
+            std::string::size_type sz;
             Conv2DFilter *filter = dynamic_cast<Conv2DFilter*>(flt);
             float kernel[args.size()];
+            //try {
             for(int i = 0; i < args.size(); i++) {
                 if(!args[i].empty())
-                  kernel[i] = stof(args[i]);
+                  kernel[i] = stof(args[i], &sz);
                 else kernel[i] = 0;
             }
+//            } catch (const std::invalid_argument& ia) {
+//                Controller::ctrlInst()->writeMsg(ia.w);
+//            }
 
             for(int i = 0; i < args.size(); i++) {
                 std::cout << kernel[i] << std::endl;
             }
 
-            filter->setFilterKernel(kernel, args.size());
+            filter->setFilterKernel(kernel, sqrt(args.size()));
         }
         else if (fltName == "separableconv2d")
         {
             name = "Separable Convolution 2D";
             //set arguments
+            std::string::size_type sz;
             SeparableConv2DFilter *filter = dynamic_cast<SeparableConv2DFilter*>(flt);
             int size = args.size() / 2;
             float horizKernel[size];
@@ -199,13 +211,14 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
 
             for(int i = 0; i < size; i++) {
                 if(!args[i].empty()) {
-                  horizKernel[i] = stof(args[i]);
-                  verticKernel[i] = stof(args[i + size]);
+                  horizKernel[i] = stof(args[i], &sz);
+                  verticKernel[i] = stof(args[i + size], &sz);
                 } else {
                     horizKernel[i] = 0;
                     verticKernel[i] = 0;
                 }
             }
+            //DEBUG
             for(int i = 0; i < size; i++) {
                 std::cout << horizKernel[i] << ":vert=" << verticKernel[i] << std::endl;
             }
@@ -215,10 +228,60 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
         else if (fltName == "sobel")
         {
             name = "Sobel Operator";
+
+
         }
         else if (fltName == "emboss")
         {
             name = "Embossing";
+
+            //set arguments
+            std::string::size_type sz;
+            EmbossFilter *filter = dynamic_cast<EmbossFilter*>(flt);
+
+            //DEBUG
+            for(int i = 0; i < args.size(); i++) {
+                std::cout << args[i] << std::endl;
+            }
+
+            //first gray level
+            float grayLevel = stof(args[0], &sz);
+            filter->setGrayLevel(grayLevel);
+
+            //second size
+            //0 = EmbossFilter::NORMAL
+            //1 = EmbossFilter::LARGE
+            switch(stoi(args[1], &sz)) {
+            case 0: {
+                filter->setSize(EmbossFilter::NORMAL);
+            }break;
+            case 1: {
+                filter->setSize(EmbossFilter::LARGE);
+            }break;
+            }
+        }
+        else if (fltName == "dog")
+        {
+            name = "Difference of Gaussians";
+            //set arguments
+            std::string::size_type sz;
+            DoGFilter *filter = dynamic_cast<DoGFilter*>(flt);
+            //first factor
+            float factor = stof(args[0], &sz);
+            filter->setFactor(factor);
+
+            //second bias
+            float bias = stof(args[1], &sz);
+            filter->setBias(bias);
+
+            //DEBUG
+           // for(int i = 0; i < args.size(); i++) {
+                std::cout << factor << std::endl;
+                std::cout << bias << std::endl;
+            //}
+        }
+        else {
+            std::cerr << "Controller: Invalid filter name!" << std::endl;
         }
 
 
@@ -226,6 +289,11 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
 
         if(resume)
             play();
+
+        Controller::ctrlInst()->writeMsg("Filter successfully added.");
+        } catch (const std::invalid_argument) {
+            Controller::ctrlInst()->writeMsg("Invalid filter argument (i.e. not a number)");
+        }
     }else {
         std::cerr << "Controller: Error adding filter" << std::endl;
     }
