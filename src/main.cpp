@@ -1,3 +1,5 @@
+//#define UTEST
+
 #ifdef UTEST
 
 #include "FilterPipeline.h"
@@ -186,7 +188,7 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
 #endif
 
   //pipeline.addFilter("emboss");
-  //pipeline.addFilter("dog");
+  pipeline.addFilter("dog");
 
 #if 0
   GaussianBlurFilter *gf = static_cast<GaussianBlurFilter *>(pipeline.addFilter2("gaussianblur"));
@@ -198,7 +200,7 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
   //pipeline.addFilter("sobel");
   //pipeline.addFilter2("oilify");
 
-#if 1
+#if 0
   TransformFilter *filter = static_cast<TransformFilter *>(pipeline.addFilter2("transform"));
   filter->setMatrix(1.0f, 0.0f, -100.0f, 0.0f, 1.0f, -100.0f);
 #endif
@@ -224,8 +226,8 @@ int main(void)
     return 1;
   }
 
-  //testFilterPipeline2Frames(&ctx);
-  testVideoConversion(&ctx);
+  testFilterPipeline2Frames(&ctx);
+  //testVideoConversion(&ctx);
 
   return 0;
 }
@@ -245,7 +247,7 @@ int main(int argc, char *argv[])
 
     // create context
     QCLContext ctx;
-    if (!ctx.create(QCLDevice::CPU))
+    if (!ctx.create(QCLDevice::GPU))
     {
       std::cerr << "Failed to create OpenCL context" << std::endl;
       return 1;
