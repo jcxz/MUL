@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>294</width>
-    <height>203</height>
+    <width>526</width>
+    <height>384</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,12 +41,32 @@
          <string>Transformation</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Convolution</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Separable Convolution 2D</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sobel Operator</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Embossing</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>3</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="pgGrayscale">
         <layout class="QGridLayout" name="gridLayout_2">
@@ -134,6 +154,182 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="psConvolution2D">
+        <widget class="QTableWidget" name="tabConvKernel">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>80</y>
+           <width>221</width>
+           <height>71</height>
+          </rect>
+         </property>
+         <property name="rowCount">
+          <number>1</number>
+         </property>
+         <attribute name="horizontalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>40</number>
+         </attribute>
+         <attribute name="horizontalHeaderHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <row/>
+        </widget>
+        <widget class="QSpinBox" name="spConvKernelSize">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>110</y>
+           <width>49</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_6">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>80</y>
+           <width>71</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Kernel size</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblHorizKernel_2">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>60</y>
+           <width>141</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Horizontal kernel</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="psSeparableconv2d">
+        <widget class="QTableWidget" name="tabVerticalKernel">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>140</y>
+           <width>256</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="rowCount">
+          <number>1</number>
+         </property>
+         <attribute name="horizontalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>40</number>
+         </attribute>
+         <attribute name="horizontalHeaderHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <row/>
+        </widget>
+        <widget class="QLabel" name="label_5">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>40</y>
+           <width>71</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Kernel size</string>
+         </property>
+        </widget>
+        <widget class="QTableWidget" name="tabHorizKernel">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>40</y>
+           <width>221</width>
+           <height>71</height>
+          </rect>
+         </property>
+         <property name="rowCount">
+          <number>1</number>
+         </property>
+         <attribute name="horizontalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>40</number>
+         </attribute>
+         <attribute name="horizontalHeaderHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <row/>
+        </widget>
+        <widget class="QLabel" name="lblHorizKernel">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>20</y>
+           <width>141</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Horizontal kernel</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spKernelSize">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>70</y>
+           <width>49</width>
+           <height>24</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblVericalKernel">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>120</y>
+           <width>101</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Vertical Kernel</string>
+         </property>
+        </widget>
+       </widget>
       </widget>
      </item>
      <item>
@@ -159,8 +355,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>250</x>
-     <y>190</y>
+     <x>262</x>
+     <y>371</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -175,8 +371,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>281</x>
-     <y>190</y>
+     <x>293</x>
+     <y>371</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

@@ -18,6 +18,10 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_spKernelSize_valueChanged(int arg1);
+
+    void on_spConvKernelSize_valueChanged(int arg1);
+
 private:
     Ui::AddFilterDialog *ui;
 };

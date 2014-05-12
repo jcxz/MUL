@@ -165,8 +165,60 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
           for(int i = 0; i < args.size(); i++) {
               if(!args[i].empty())
                 m[i] = stof(args[i]);
+              else m[i] = 0;
           }
           filter->setMatrix(m);
+        }
+        else if (fltName == "conv2d")
+        {
+            name = "Convolution 2D";
+            //set arguments
+            //stored row by row
+            Conv2DFilter *filter = dynamic_cast<Conv2DFilter*>(flt);
+            float kernel[args.size()];
+            for(int i = 0; i < args.size(); i++) {
+                if(!args[i].empty())
+                  kernel[i] = stof(args[i]);
+                else kernel[i] = 0;
+            }
+
+            for(int i = 0; i < args.size(); i++) {
+                std::cout << kernel[i] << std::endl;
+            }
+
+            filter->setFilterKernel(kernel, args.size());
+        }
+        else if (fltName == "separableconv2d")
+        {
+            name = "Separable Convolution 2D";
+            //set arguments
+            SeparableConv2DFilter *filter = dynamic_cast<SeparableConv2DFilter*>(flt);
+            int size = args.size() / 2;
+            float horizKernel[size];
+            float verticKernel[size];
+
+            for(int i = 0; i < size; i++) {
+                if(!args[i].empty()) {
+                  horizKernel[i] = stof(args[i]);
+                  verticKernel[i] = stof(args[i + size]);
+                } else {
+                    horizKernel[i] = 0;
+                    verticKernel[i] = 0;
+                }
+            }
+            for(int i = 0; i < size; i++) {
+                std::cout << horizKernel[i] << ":vert=" << verticKernel[i] << std::endl;
+            }
+            filter->setHorizontalFilterKernel(horizKernel, size);
+            filter->setVerticalFilterKernel(verticKernel, size);
+        }
+        else if (fltName == "sobel")
+        {
+            name = "Sobel Operator";
+        }
+        else if (fltName == "emboss")
+        {
+            name = "Embossing";
         }
 
 

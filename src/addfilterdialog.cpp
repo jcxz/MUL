@@ -39,5 +39,47 @@ void AddFilterDialog::on_buttonBox_accepted()
         args.push_back(ui->leTrans6->text().toStdString());
         Controller::ctrlInst()->addFilter("transform", args);
     }break;
+    case 4: {
+        if(ui->tabConvKernel->columnCount() != ui->tabConvKernel->rowCount())
+            std::cerr << "AddFilterDialog: Convolution kernel not square!"
+                         << std::endl;
+        //kernel values
+        //stored row by row
+        for(int i = 0; i < ui->tabConvKernel->rowCount(); i++) {
+            for(int j = 0; j < ui->tabConvKernel->columnCount(); j++) {
+                args.push_back(ui->tabConvKernel->item(i, i)->text().toStdString());
+            }
+        }
+        Controller::ctrlInst()->addFilter("conv2d", args);
+    }break;
+    case 5: {
+        //first horizontal kernel values
+        for(int i = 0; i < ui->tabHorizKernel->columnCount(); i++) {
+            args.push_back(ui->tabHorizKernel->item(0, i)->text().toStdString());
+        }
+        //then vertical kernel values
+        for(int i = 0; i < ui->tabVerticalKernel->columnCount(); i++) {
+            args.push_back(ui->tabVerticalKernel->item(0, i)->text().toStdString());
+        }
+        Controller::ctrlInst()->addFilter("separableconv2d", args);
+    }break;
+    case 6: {
+        Controller::ctrlInst()->addFilter("sobel", args);
+    }break;
+    case 7: {
+        Controller::ctrlInst()->addFilter("emboss", args);
+    }break;
     }
+}
+
+void AddFilterDialog::on_spKernelSize_valueChanged(int arg1)
+{
+    ui->tabHorizKernel->setColumnCount(arg1);
+    ui->tabVerticalKernel->setColumnCount(arg1);
+}
+
+void AddFilterDialog::on_spConvKernelSize_valueChanged(int arg1)
+{
+    ui->tabConvKernel->setColumnCount(arg1);
+    ui->tabConvKernel->setRowCount(arg1);
 }
