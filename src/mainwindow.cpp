@@ -66,8 +66,9 @@ void MainWindow::on_btnConvert_clicked()
     QString fileName = QFileDialog::getSaveFileName(this, tr("Convert Video To File"),
                                 "./converted.avi",
                                 tr("Video Files (*.avi)"));
-    if(fileName != NULL)
+    if(fileName != NULL) {
         Controller::ctrlInst()->convertToFile(fileName);
+    }
 }
 
 void MainWindow::on_btnStopConvert_clicked()

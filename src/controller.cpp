@@ -44,18 +44,22 @@ void Controller::renderQFrame(const QImage &frame)
 }
 
 void Controller::play() {
-    if(!player.isRunning())
+    if(!player.isRunning()) {
         player.play();
+        Controller::writeMsg("Playing...");
+    }
     else
         std::cerr << "Controller: Trying to start already running thread of class Player" << std::endl;
 }
 
 void Controller::stop() {
     player.stop();
+    Controller::ctrlInst()->writeMsg("Stopped");
 }
 
 void Controller::pause() {
     player.pause();
+    Controller::writeMsg("Paused");
 }
 
 void Controller::openVideoFile(QString &fileName)
@@ -114,6 +118,7 @@ void Controller::convertToFile(QString &fileName)
         pause(); //pause playing if it is running
         converter.convert(player.getCurrInput(), player.getCurrFilter(),
                           fileName, pipeline);
+        Controller::writeMsg("Converting to file...");
     }
     else
         std::cerr << "Controller: Trying to start already running thread of class Converter" << std::endl;
@@ -125,7 +130,8 @@ void Controller::stopConvertToFile()
     converter.stop();
     converter.wait();
     controlsEnabled(true);
-    qDebug() <<"STOP" << converter.isFinished();
+    Controller::ctrlInst()->writeMsg("Stopped");
+    //qDebug() <<"STOP" << converter.isFinished();
 }
 
 void Controller::convertFinished(bool result)
@@ -332,6 +338,8 @@ void Controller::removeFilter(int index) {
 
     pipeline->removeFilter(filterVec[index].second);
     filterVec.erase(filterVec.begin() + index);
+
+    Controller::writeMsg("Filter removed");
 
     if(resume)
         play();
