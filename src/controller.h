@@ -13,6 +13,11 @@
 #include "FilterPipeline.h"
 #include "opencl/qclcontext.h"
 #include "TransformFilter.h"
+#include "SeparableConv2DFilter.h"
+#include "Conv2DFilter.h"
+#include "EmbossFilter.h"
+#include "DoGFilter.h"
+#include "GaussianBlurFilter.h"
 
 #include <QtConcurrent/QtConcurrent>
 

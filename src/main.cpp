@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 
     // create context
     QCLContext ctx;
-    if (!ctx.create(QCLDevice::GPU))
+    if (!ctx.create(QCLDevice::CPU))
     {
       std::cerr << "Failed to create OpenCL context" << std::endl;
       return 1;
