@@ -97,6 +97,8 @@ HEADERS += \
     src/filters/SeparableConv2DFilter.h \
     src/filters/SobelFilter.h \
     src/filters/EmbossFilter.h \
+    src/filters/DoGFilter.h \
+    src/filters/GaussianBlurFilter.h \
     \
     src/mainwindow.h \
     src/mattoqimage.h \
@@ -135,6 +137,8 @@ SOURCES += \
     src/filters/SeparableConv2DFilter.cpp \
     src/filters/SobelFilter.cpp \
     src/filters/EmbossFilter.cpp \
+    src/filters/DoGFilter.cpp \
+    src/filters/GaussianBlurFilter.cpp \
     \
     src/mainwindow.cpp \
     src/mattoqimage.cpp \

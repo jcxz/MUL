@@ -4,6 +4,7 @@
 #include "TransformFilter.h"
 #include "GrayScaleFilter.h"
 #include "SeparableConv2DFilter.h"
+#include "GaussianBlurFilter.h"
 #include "Conv2DFilter.h"
 #include "opencl/qclcontext.h"
 
@@ -11,8 +12,11 @@
 #include <QImage>
 
 
-#define IN_FRAME1 "data/lena.png"
+//#define IN_FRAME1 "data/lena.png"
+//#define IN_FRAME1 "D:/AC601/obrazky/testovacie/intel_80486dx2_bottom_thumb.jpg"
+#define IN_FRAME1 "D:/AC601/obrazky/PasoveFoto/orezane.jpg"
 #define OUT_FRAME1 "bordel/frame1.png"
+
 //#define IN_FRAME1 "D:/AC601/obrazky/testovacie/dog.jpg"
 //#define OUT_FRAME1 "bordel/dog.jpg"
 
@@ -64,6 +68,7 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
   FilterPipeline pipeline(ctx);
 
   //pipeline.addFilter("grayscale");
+  //pipeline.addFilter2("grayscale")->setCLContext(nullptr);
 
 #if 0
   Conv2DFilter *conv2d_f = static_cast<Conv2DFilter *>(pipeline.addFilter2("conv2d"));
@@ -88,7 +93,12 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
   //float kern_2d_sep[] = { -1.0f, 0.0f, 1.0f };
 
   float kern_2d_sep[] = { 1.0f / 4.0f,  1.0f / 2.0f, 1.0f / 4.0f };
-  conv2d_sep_f->setVerticalFilterKernel(kern_2d_sep, 3);
+  //conv2d_sep_f->setVerticalFilterKernel(kern_2d_sep, 3);
+  //conv2d_sep_f->setHorizontalFilterKernel(kern_2d_sep, 3);
+
+  float *ptr = conv2d_sep_f->mapVerticalFilterKernel(3);
+  ptr[0] = 1.0f / 4.0f; ptr[1] = 1.0f / 2.0f; ptr[2] = 1.0f / 4.0f;
+  conv2d_sep_f->unmapVerticalFilterKernel(ptr);
   conv2d_sep_f->setHorizontalFilterKernel(kern_2d_sep, 3);
 
   //float kern_2d_sep[] = { 1.0f / 8.0f, 1.0f / 2.0f,  1.0f / 4.0f, 1.0f / 2.0f, 1.0f / 8.0f };
@@ -96,7 +106,13 @@ static bool testFilterPipeline2Frames(QCLContext *ctx)
   //conv2d_sep_f->setHorizontalFilterKernel(kern_2d_sep, 5);
 #endif
 
-  pipeline.addFilter("emboss");
+  //pipeline.addFilter("emboss");
+  //pipeline.addFilter("dog");
+
+  GaussianBlurFilter *gf = static_cast<GaussianBlurFilter *>(pipeline.addFilter2("gaussianblur"));
+  //gf->setSize(15);
+  gf->setSigma(16.0f);
+  gf->setVariance(16.0f);
 
   //pipeline.addFilter("sobel");
 

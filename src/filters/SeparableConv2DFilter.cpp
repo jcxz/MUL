@@ -93,3 +93,19 @@ bool SeparableConv2DFilter::runCL(const QCLImage2D & src, int w, int h, QCLImage
 
   return true;
 }
+
+
+void SeparableConv2DFilter::setConvKernels(QCLBuffer & filter_horz, QCLBuffer & filter_vert, int filter_w)
+{
+  m_kernel_horz.setArg(FILTER_IDX, filter_horz);
+  m_kernel_horz.setArg(FILTER_SIZE_IDX, filter_w);
+  m_kernel_horz.setArg(FILTER_SIZE_HALF_IDX, (filter_w - 1) / 2);
+  m_filter_size_horz = filter_w;
+  m_filter_ocl_horz = filter_horz;
+
+  m_kernel_vert.setArg(FILTER_IDX, filter_vert);
+  m_kernel_vert.setArg(FILTER_SIZE_IDX, filter_w);
+  m_kernel_vert.setArg(FILTER_SIZE_HALF_IDX, (filter_w - 1) / 2);
+  m_filter_size_vert = filter_w;
+  m_filter_ocl_vert = filter_vert;
+}

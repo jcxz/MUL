@@ -39,6 +39,8 @@ class SeparableConv2DFilter : public ConvFilterBase
 
     bool setClampMode(QCLSampler::AddressingMode mode);
 
+    void setConvKernels(QCLBuffer & filter_horz, QCLBuffer & filter_vert, int filter_w);
+
     /**
      * @brief setHorizontalFilterKernel set the filter kernel to be used
      * for convolution in horizontal direction

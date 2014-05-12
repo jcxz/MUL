@@ -16,6 +16,9 @@ class EmbossFilter : public Filter
       LARGE
     };
 
+    enum EmbossDirection {
+    };
+
   public:
     explicit EmbossFilter(QCLContext *ctx)
       : Filter(ctx)

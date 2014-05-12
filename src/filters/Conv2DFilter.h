@@ -27,6 +27,15 @@ class Conv2DFilter : public ConvFilterBase
     void setBias(float bias)
     { m_kernel.setArg(BIAS_IDX, QVector4D(bias, bias, bias, bias)); }
 
+    void setConvKernel(QCLBuffer & filter, int filter_w)
+    {
+      m_kernel.setArg(FILTER_IDX, filter);
+      m_kernel.setArg(FILTER_SIZE_IDX, filter_w);
+      m_kernel.setArg(FILTER_SIZE_HALF_IDX, (filter_w - 1) / 2);
+      m_filter_size = filter_w;
+      m_filter_ocl = filter;
+    }
+
     bool setClampMode(QCLSampler::AddressingMode mode);
 
     /**

@@ -7,6 +7,8 @@
 #include "Conv2DFilter.h"
 #include "SeparableConv2DFilter.h"
 #include "EmbossFilter.h"
+#include "DoGFilter.h"
+#include "GaussianBlurFilter.h"
 #include "opencl/qclcontext.h"
 #include "debug.h"
 
@@ -50,6 +52,14 @@ Filter* FilterPipeline::createFilter(const char *name) const
   else if (strcmp(name, "emboss") == 0)
   {
     filter = new EmbossFilter(m_ctx);
+  }
+  else if (strcmp(name, "dog") == 0)
+  {
+    filter = new DoGFilter(m_ctx);
+  }
+  else if (strcmp(name, "gaussianblur") == 0)
+  {
+    filter = new GaussianBlurFilter(m_ctx);
   }
   else
   {
