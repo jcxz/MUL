@@ -103,6 +103,15 @@ void AddFilterDialog::on_buttonBox_accepted()
         args.push_back(ui->leDoGBias->text().toStdString());
         Controller::ctrlInst()->addFilter("dog", args);
     }break;
+    case 9: {
+        //first sigma
+        args.push_back(ui->leBlurSigma->text().toStdString());
+        //second variance
+        args.push_back(ui->leBlurVariance->text().toStdString());
+        //third size
+        args.push_back(ui->leBlurSize->text().toStdString());
+        Controller::ctrlInst()->addFilter("gaussianblur", args);
+    }break;
     }
 }
 

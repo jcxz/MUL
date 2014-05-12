@@ -280,6 +280,31 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
                 std::cout << bias << std::endl;
             //}
         }
+        else if (fltName == "gaussianblur")
+        {
+            name = "Gaussian Blur";
+            //set arguments
+            std::string::size_type sz;
+            GaussianBlurFilter *filter = dynamic_cast<GaussianBlurFilter*>(flt);
+            //first sigma
+            double sigma = stod(args[0], &sz);
+            filter->setSigma(sigma);
+
+            //second variance
+            double variance = stod(args[1], &sz);
+            filter->setVariance(variance);
+
+            //third size
+            int size = stoi(args[2], &sz);
+            filter->setSize(size);
+
+            //DEBUG
+            for(int i = 0; i < args.size(); i++) {
+                std::cout << sigma << std::endl;
+                std::cout << variance << std::endl;
+                std::cout << size << std::endl;
+            }
+        }
         else {
             std::cerr << "Controller: Invalid filter name!" << std::endl;
         }
