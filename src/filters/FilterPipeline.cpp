@@ -9,6 +9,8 @@
 #include "EmbossFilter.h"
 #include "DoGFilter.h"
 #include "GaussianBlurFilter.h"
+#include "OilifyFilter.h"
+#include "ShakeFilter.h"
 #include "opencl/qclcontext.h"
 #include "debug.h"
 
@@ -60,6 +62,14 @@ Filter* FilterPipeline::createFilter(const char *name) const
   else if (strcmp(name, "gaussianblur") == 0)
   {
     filter = new GaussianBlurFilter(m_ctx);
+  }
+  else if (strcmp(name, "oilify") == 0)
+  {
+    filter = new OilifyFilter(m_ctx);
+  }
+  else if (strcmp(name, "shake") == 0)
+  {
+    filter = new ShakeFilter(m_ctx);
   }
   else
   {

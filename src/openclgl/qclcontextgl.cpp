@@ -103,7 +103,7 @@ static void CL_CALLBACK qt_clgl_context_notify(const char *errinfo,
     qWarning() << "OpenCL/GL context notification: " << errinfo;
 }
 
-};
+}
 
 #if !defined(CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR)
 #define CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR 0x2006

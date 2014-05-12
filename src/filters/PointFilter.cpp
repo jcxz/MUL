@@ -21,7 +21,7 @@ bool PointFilter::init(const char *program, const char *kernel)
   m_kernel = m_program.createKernel(kernel);
   if (m_kernel.isNull())
   {
-    ERRORM("Failed to create OpenCL program: " << m_program.log().toStdString());
+    ERRORM("Failed to create OpenCL kernel: " << m_program.log().toStdString());
     return false;
   }
 

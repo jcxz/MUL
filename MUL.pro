@@ -12,7 +12,7 @@ CONFIG -= app_bundle
 TARGET = MUL
 TEMPLATE = app
 
-QMAKE_CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -g -Wno-c++11-narrowing
+QMAKE_CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -g -Wno-c++11-narrowing -Wno-narrowing
 
 CL_KERNELS_DIR = src/clkernels
 
@@ -49,7 +49,7 @@ win32 {
     LIBS += -L"C:/Program Files (x86)/AMD APP/lib/x86"
     LIBS += -lOpenCL
 
-    DEFINES += UTEST
+    #DEFINES += UTEST
 }
 
 
@@ -99,6 +99,8 @@ HEADERS += \
     src/filters/EmbossFilter.h \
     src/filters/DoGFilter.h \
     src/filters/GaussianBlurFilter.h \
+    src/filters/OilifyFilter.h \
+    src/filters/ShakeFilter.h \
     \
     src/mainwindow.h \
     src/mattoqimage.h \
@@ -139,6 +141,7 @@ SOURCES += \
     src/filters/EmbossFilter.cpp \
     src/filters/DoGFilter.cpp \
     src/filters/GaussianBlurFilter.cpp \
+    src/filters/OilifyFilter.cpp \
     \
     src/mainwindow.cpp \
     src/mattoqimage.cpp \

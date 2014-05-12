@@ -4,6 +4,21 @@
 
 
 
+void TransformFilter::invertMatrix(float *mat)
+{
+  double D = mat[0] * mat[4] - mat[1] * mat[3];
+  D = D != 0 ? 1./D : 0;
+
+  double A11 = mat[4] * D, A22 = mat[0] * D;
+  mat[0] = A11; mat[1] *= -D;
+  mat[3] *= -D; mat[4] = A22;
+
+  double b1 = -mat[0] * mat[2] - mat[1] * mat[5];
+  double b2 = -mat[3] * mat[2] - mat[4] * mat[5];
+  mat[2] = b1; mat[5] = b2;
+}
+
+
 bool TransformFilter::init(void)
 {
   // skip OpenCL initialization in case context is not given

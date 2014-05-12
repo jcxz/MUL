@@ -372,7 +372,7 @@ QCLEvent QCLImage2D::writeAsync
     \sa copyToAsync()
 */
 bool QCLImage2D::copyTo
-    (const QRect &rect, const QCLImage2D &dest, const QPoint &destOffset)
+    (const QRect &rect, const QCLImage2D &dest, const QPoint &destOffset) const
 {
     size_t src_origin[3] = {(size_t)rect.x(), (size_t)rect.y(), 0};
     size_t dst_origin[3] = {(size_t)destOffset.x(), (size_t)destOffset.y(), 0};
@@ -401,7 +401,7 @@ bool QCLImage2D::copyTo
     \sa copyToAsync()
 */
 bool QCLImage2D::copyTo
-    (const QRect &rect, const QCLImage3D &dest, const size_t destOffset[3])
+    (const QRect &rect, const QCLImage3D &dest, const size_t destOffset[3]) const
 {
     size_t src_origin[3] = {(size_t)rect.x(), (size_t)rect.y(), 0};
     size_t region[3] = {(size_t)rect.width(), (size_t)rect.height(), 1};
@@ -429,7 +429,7 @@ bool QCLImage2D::copyTo
     \sa copyToAsync()
 */
 bool QCLImage2D::copyTo
-    (const QRect &rect, const QCLBuffer &dest, size_t destOffset)
+    (const QRect &rect, const QCLBuffer &dest, size_t destOffset) const
 {
     size_t src_origin[3] = {(size_t)rect.x(), (size_t)rect.y(), 0};
     size_t region[3] = {(size_t)rect.width(), (size_t)rect.height(), 1};

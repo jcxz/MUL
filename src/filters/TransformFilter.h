@@ -11,6 +11,7 @@ class TransformFilter : public Filter
   private:
     inline float M(int y, int x) const { return m_matrix[y * 3 + x]; }
     inline float & M(int y, int x) { return m_matrix[y * 3 + x]; }
+    static void invertMatrix(float *mat);
 
   public:
     explicit TransformFilter(QCLContext *ctx)
@@ -34,6 +35,7 @@ class TransformFilter : public Filter
     {
       M(0, 0) = m11; M(0, 1) = m12; M(0, 2) = m13;
       M(1, 0) = m21; M(1, 1) = m22; M(1, 2) = m23;
+      invertMatrix(m_matrix);
       m_matrix_changed = true;
     }
 
@@ -41,6 +43,7 @@ class TransformFilter : public Filter
     void setMatrix(const float m[6])
     {
       for (int i = 0; i < 6; ++i) m_matrix[i] = m[i];
+      invertMatrix(m_matrix);
       m_matrix_changed = true;
     }
 

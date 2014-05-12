@@ -10,18 +10,6 @@
 
 bool GaussianBlurFilter::setConvKernels(void)
 {
-  /*
-  float *ptr = m_conv.mapHorizontalFilterKernel(m_size);
-  if (ptr == nullptr) return false;
-  genGaussKernel1D(m_sigma, m_variance, ptr, m_size);
-  m_conv.unmapHorizontalFilterKernel(ptr);
-
-  ptr = m_conv.mapVerticalFilterKernel(m_size);
-  if (ptr == nullptr) return false;
-  genGaussKernel1D(m_sigma, m_variance, ptr, m_size);
-  m_conv.unmapVerticalFilterKernel(ptr);
-  */
-
   float *ptr_horz = m_conv.mapHorizontalFilterKernel(m_size);
   if (ptr_horz == nullptr) return false;
 

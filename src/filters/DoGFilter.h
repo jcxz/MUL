@@ -23,8 +23,8 @@ class DoGFilter : public Filter
   public:
     explicit DoGFilter(QCLContext *ctx)
       : Filter(ctx)
-      , m_conv(ctx)
       , m_grayscale(ctx)
+      , m_conv(ctx)
       , m_invert(false)
       , m_tmp_buf_w(-1)
       , m_tmp_buf_h(-1)

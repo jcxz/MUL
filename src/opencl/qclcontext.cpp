@@ -126,7 +126,7 @@ static void CL_CALLBACK qt_cl_context_notify(const char *errinfo,
     qWarning() << "OpenCL context notification: " << errinfo;
 }
 
-};
+}
 
 /*!
     Creates a new OpenCL context that matches \a type.  Does nothing

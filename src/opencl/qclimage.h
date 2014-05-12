@@ -91,11 +91,11 @@ public:
          int bytesPerLine = 0);
 
     bool copyTo(const QRect &rect, const QCLImage2D &dest,
-                const QPoint &destOffset);
+                const QPoint &destOffset) const;
     bool copyTo(const QRect &rect, const QCLImage3D &dest,
-                const size_t destOffset[3]);
+                const size_t destOffset[3]) const;
     bool copyTo(const QRect &rect, const QCLBuffer &dest,
-                size_t destOffset);
+                size_t destOffset) const;
     QCLEvent copyToAsync
         (const QRect &rect, const QCLImage2D &dest, const QPoint &destOffset,
          const QCLEventList &after = QCLEventList());
