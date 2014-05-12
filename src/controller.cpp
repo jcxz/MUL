@@ -176,10 +176,11 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
               else m[i] = 0;
           }
           filter->setMatrix(m);
-          //DEBUG
+#ifdef DEBUG
           for(int i = 0; i < args.size(); i++) {
               std::cout << m[i] << std::endl;
           }
+#endif
         }
         else if (fltName == "conv2d")
         {
@@ -224,10 +225,11 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
                     verticKernel[i] = 0;
                 }
             }
-            //DEBUG
+#ifdef DEBUG
             for(int i = 0; i < size; i++) {
                 std::cout << horizKernel[i] << ":vert=" << verticKernel[i] << std::endl;
             }
+#endif
             filter->setHorizontalFilterKernel(horizKernel, size);
             filter->setVerticalFilterKernel(verticKernel, size);
         }
@@ -245,10 +247,11 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
             std::string::size_type sz;
             EmbossFilter *filter = dynamic_cast<EmbossFilter*>(flt);
 
-            //DEBUG
+#ifdef DEBUG
             for(int i = 0; i < args.size(); i++) {
                 std::cout << args[i] << std::endl;
             }
+#endif
 
             //first gray level
             float grayLevel = stof(args[0], &sz);
@@ -280,11 +283,12 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
             float bias = stof(args[1], &sz);
             filter->setBias(bias);
 
-            //DEBUG
+#ifdef DEBUG
            // for(int i = 0; i < args.size(); i++) {
                 std::cout << factor << std::endl;
                 std::cout << bias << std::endl;
             //}
+#endif
         }
         else if (fltName == "gaussianblur")
         {
@@ -304,12 +308,13 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
             int size = stoi(args[2], &sz);
             filter->setSize(size);
 
-            //DEBUG
+#ifdef DEBUG
             for(int i = 0; i < args.size(); i++) {
                 std::cout << sigma << std::endl;
                 std::cout << variance << std::endl;
                 std::cout << size << std::endl;
             }
+#endif
         }
         else {
             std::cerr << "Controller: Invalid filter name!" << std::endl;
