@@ -101,6 +101,7 @@ void AddFilterDialog::on_buttonBox_accepted()
         args.push_back(ui->leDoGFactor->text().toStdString());
         //second bias
         args.push_back(ui->leDoGBias->text().toStdString());
+        args.push_back(ui->cbInvert->isChecked() ? "true" : "false");
         Controller::ctrlInst()->addFilter("dog", args);
     }break;
     case 9: {
@@ -112,6 +113,17 @@ void AddFilterDialog::on_buttonBox_accepted()
         args.push_back(ui->leBlurSize->text().toStdString());
         Controller::ctrlInst()->addFilter("gaussianblur", args);
     }break;
+
+      case 10:
+        args.push_back(ui->leRadius->text().toStdString());
+        args.push_back(ui->leIntensityLevels->text().toStdString());
+        Controller::ctrlInst()->addFilter("oilify", args);
+        break;
+
+      case 11:
+        args.push_back(std::to_string(ui->intensitySlider->value()));
+        Controller::ctrlInst()->addFilter("shake", args);
+        break;
     }
 }
 

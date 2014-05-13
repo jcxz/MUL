@@ -18,6 +18,8 @@
 #include "EmbossFilter.h"
 #include "DoGFilter.h"
 #include "GaussianBlurFilter.h"
+#include "OilifyFilter.h"
+#include "ShakeFilter.h"
 
 #include <QtConcurrent/QtConcurrent>
 

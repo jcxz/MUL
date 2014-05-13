@@ -283,6 +283,9 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
             float bias = stof(args[1], &sz);
             filter->setBias(bias);
 
+            if (args[2] == "true")
+              filter->setInverted(true);
+
 #ifdef DEBUG
            // for(int i = 0; i < args.size(); i++) {
                 std::cout << factor << std::endl;
@@ -315,6 +318,21 @@ void Controller::addFilter(std::string fltName, std::vector<std::string> args) {
                 std::cout << size << std::endl;
             }
 #endif
+        }
+        else if (fltName == "oilify")
+        {
+          name = "Oilify";
+          //set arguments
+          OilifyFilter *filter = dynamic_cast<OilifyFilter*>(flt);
+          filter->setRadius(atoi(args[0].c_str()));
+          filter->setLevels(atoi(args[1].c_str()));
+        }
+        else if (fltName == "shake")
+        {
+          name = "Shake";
+          //set arguments
+          ShakeFilter *filter = dynamic_cast<ShakeFilter*>(flt);
+          filter->setIntensity(double(atoi(args[0].c_str()) / 100.0f));
         }
         else {
             std::cerr << "Controller: Invalid filter name!" << std::endl;

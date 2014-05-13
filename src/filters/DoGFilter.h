@@ -30,6 +30,7 @@ class DoGFilter : public Filter
       , m_tmp_buf_h(-1)
     { init(); }
 
+    void setInverted(bool invert) { m_invert = invert; }
     void setFactor(float factor)
     {
       QVector4D v(factor, factor, factor, 0.0f);
