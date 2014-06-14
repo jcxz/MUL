@@ -32,6 +32,19 @@
 
 
 
+struct Fourcc
+{
+  int m_fourcc;
+  explicit Fourcc(int fourcc) : m_fourcc(fourcc) { }
+  friend std::ostream & operator<<(std::ostream & os, const Fourcc fcc)
+  {
+    return os << (char) (fcc.m_fourcc >> 24)
+              << (char) (fcc.m_fourcc >> 16)
+              << (char) (fcc.m_fourcc >>  8)
+              << (char) (fcc.m_fourcc);
+  }
+};
+
 
 static bool convertVideo(const char *ifilename, const char *ofilename, FilterPipeline *pipeline)
 {
@@ -52,7 +65,7 @@ static bool convertVideo(const char *ifilename, const char *ofilename, FilterPip
   cv::Size size(in.get(CV_CAP_PROP_FRAME_WIDTH), in.get(CV_CAP_PROP_FRAME_HEIGHT));
 
   std::cout << "Input video properties:" << std::endl;
-  std::cout << "fourcc : " << fourcc << std::endl;
+  std::cout << "fourcc : " << Fourcc(fourcc) << std::endl;
   std::cout << "fps    : " << fps << std::endl;
   std::cout << "size   : " << size << std::endl;
   std::cout << "format : " << in.get(CV_CAP_PROP_FORMAT) << std::endl;
@@ -226,8 +239,8 @@ int main(void)
     return 1;
   }
 
-  testFilterPipeline2Frames(&ctx);
-  //testVideoConversion(&ctx);
+  //testFilterPipeline2Frames(&ctx);
+  testVideoConversion(&ctx);
 
   return 0;
 }

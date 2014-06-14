@@ -12,7 +12,7 @@ CONFIG -= app_bundle
 TARGET = MUL
 TEMPLATE = app
 
-QMAKE_CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -g -Wno-c++11-narrowing -Wno-narrowing
+QMAKE_CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -g -Wno-c++11-narrowing -Wno-narrowing -O3
 
 CL_KERNELS_DIR = src/clkernels
 
@@ -159,4 +159,5 @@ OTHER_FILES += \
     $${CL_KERNELS_DIR}/convolution.cl \
     $${CL_KERNELS_DIR}/grayscale.cl \
     $${CL_KERNELS_DIR}/sepia.cl \
-    $${CL_KERNELS_DIR}/transform.cl
+    $${CL_KERNELS_DIR}/transform.cl \
+    $${CL_KERNELS_DIR}/oilify.cl
